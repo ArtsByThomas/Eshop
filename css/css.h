@@ -1,5 +1,5 @@
 #include <stdint.h>
-
+#include <stddef.h>
 typedef struct {
     int has_width;      int width;
     int has_height;     int height;
@@ -28,7 +28,42 @@ typedef struct {
     int order;
     ComputedStyle decl;
 } CSSRule;
+typedef enum {
+    CSS_PROP_COLOR,
+    CSS_PROP_BG_COLOR,
+    CSS_PROP_WIDTH,
+    CSS_PROP_HEIGHT,
+    CSS_PROP_MARGIN,
+    CSS_PROP_PADDING,
+    CSS_PROP_DISPLAY,
+    CSS_PROP_FONT_SIZE,
+    CSS_PROP_FLOAT,
+    CSS_PROP_TEXT_ALIGN,
+    CSS_PROP_BORDER,
+    CSS_PROP_BORDER_RADIUS,
+    CSS_PROP_UNKNOWN // Speciální hodnota pro neznámé vlastnosti
+} CssPropId;
+typedef struct {
+    const char *name;
+    CssPropId id;
+} CssPropertyMap;
 
+static const CssPropertyMap prop_map[] = {
+    {"color",            CSS_PROP_COLOR},
+    {"background-color", CSS_PROP_BG_COLOR},
+    {"background",       CSS_PROP_BG_COLOR},
+    {"width",            CSS_PROP_WIDTH},
+    {"height",           CSS_PROP_HEIGHT},
+    {"margin",           CSS_PROP_MARGIN},
+    {"padding",          CSS_PROP_PADDING},
+    {"display",          CSS_PROP_DISPLAY},
+    {"font-size",        CSS_PROP_FONT_SIZE},
+    {"float",            CSS_PROP_FLOAT},
+    {"text-align",       CSS_PROP_TEXT_ALIGN},
+    {"border",           CSS_PROP_BORDER},
+    {"border-radius",    CSS_PROP_BORDER_RADIUS},
+    {NULL,               CSS_PROP_UNKNOWN} // Zarážka nakonec
+};
 #define MAX_CSS_RULES 128
 CSSRule css_rules[MAX_CSS_RULES];
 int css_rule_count = 0;
