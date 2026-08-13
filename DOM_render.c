@@ -1,21 +1,20 @@
 #include "DOM.h"
+#include "browser.h"
 #include <stdint.h>
 #include "css.h"
-#include "navigation.h"
+#include "js.h"
 extern int utf8_char_len(const char* s);
 extern int str_eq(const char* a, const char* b);
+extern void js_collect_script(const char* src, int len) ;
+extern void compute_style_tree(DOMNode* n, ComputedStyle* parent_style);
 extern int text_pixel_width(int len, int font_scale);
-extern int draw_text_scaled(int x, int y, const char* text, int len, uint32_t color, int scale);
-extern int draw_text_user(int x, int y, const char* text, int len, uint32_t color);
-extern int draw_rect_user(int x, int y, int w, int h, uint32_t color);
-extern int draw_bmp(int x, int y, const uint8_t* d, int* w, int* h);
-extern int draw_border_user(int x, int y, int w, int h, int w, uint32_t color);
-extern int sys_get_time_ms(void);
+extern void resolve_relative_url(const char* href, char* out, int out_size);
+extern int parse_url(const char* url, char* out_domain, char* out_path, int* out_is_https, int* out_port, int* out_is_ip);
+void draw_border_user(int x, int y, int w, int h, int border_w, uint32_t color) ;
 extern int str_len(const char* s);
-extern int draw_char_user(int x, int y, char c, uint32_t color);
-extern char* strstr(const char *, const char *);
 extern int browser_width;
-extern void alloc_node(void);
+extern uint32_t sys_dns_resolve(const char *domain);
+extern DOMNode* alloc_node(void);
 extern void str_copy(char* dst, const char* src, int max_len);
 extern int str_eq_n(const char* a, const char* b, int n);
 extern int str_starts_with(const char* str, const char* prefix);
@@ -23,8 +22,9 @@ extern int js_script_block_count;
 extern int img_pool_used;
 extern int browser_height;
 extern void parse_css_block(const char* content);
-extern int draw_rounded_rect_user(int x, int y, int w, int h, int radius, uint32_t color);
-
+extern  uint32_t current_server_ip;
+extern const char * current_domain;
+extern uint32_t parse_ipv4(const char* s) ;
 int layout_text(DOMNode* node, int wrap_w) {
     int scale = node->style.font_scale;
     int line_h = 8 * scale + 2;

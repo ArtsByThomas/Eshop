@@ -1,5 +1,4 @@
 #include "css.h"
-#include <stdint.h>
 #include "DOM.h"
 extern int str_starts_with(const char* str, const char* prefix);
 extern int str_len(const char* s);
@@ -10,6 +9,7 @@ extern int is_alpha_c(char c);
 extern int is_digit_c(char c);
 extern int hex_digit_val(char c);
 extern int str_eq(const char* a, const char* b);
+
 uint32_t parse_css_color(const char** p) {
     skip_spaces(p);
     const char* s = *p;

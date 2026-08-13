@@ -1,3 +1,4 @@
+#include <stdint.h>
 
 typedef struct {
     int has_width;      int width;
@@ -33,7 +34,7 @@ CSSRule css_rules[MAX_CSS_RULES];
 int css_rule_count = 0;
 
 typedef struct { const char* name; uint32_t value; } NamedColor;
-static const NamedColor named_colors[] = {
+ static const NamedColor named_colors[] = {
     {"black",   0xFF000000}, {"white",   0xFFFFFFFF}, {"red",     0xFFFF0000},
     {"green",   0xFF008000}, {"blue",    0xFF0000FF}, {"yellow",  0xFFFFFF00},
     {"gray",    0xFF808080}, {"grey",    0xFF808080}, {"silver",  0xFFC0C0C0},
@@ -42,4 +43,6 @@ static const NamedColor named_colors[] = {
     {"navy",    0xFF000080}, {"teal",    0xFF008080}, {"lime",    0xFF00FF00},
     {"maroon",  0xFF800000}, {"olive",   0xFF808000}, {"transparent", 0x00000000},
 };
+extern const NamedColor named_colors[];
+extern const unsigned int NAMED_COLOR_COUNT;
 #define NAMED_COLOR_COUNT (sizeof(named_colors)/sizeof(named_colors[0]))

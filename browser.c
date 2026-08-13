@@ -4,10 +4,14 @@
 #include "css.h"
 #include "navigation.h"
 #define HOME_URL "http://192.168.2.1:8000/"
-extern void alloc_node(void);
+extern DOMNode* alloc_node(void);
+extern DOMNode* dom_find_at_point(DOMNode* node, int doc_x, int doc_y);
 extern void navigate_to(const char* url);
 extern void layout_dom_node(DOMNode* node, int start_x, int start_y, int avail_w, int* out_w, int* out_h);
 extern void paint_dom_node(DOMNode* node);
+extern int dom_collect_ancestor_chain(DOMNode* root, DOMNode* target, DOMNode** out_chain, int max_len);
+extern int js_fire_click_bubbling(DOMNode* page_root, DOMNode* node);
+extern int js_timers_tick(void);
 extern int address_bar_focused;
 extern int address_bar_len;
 extern char address_bar_text[128];
