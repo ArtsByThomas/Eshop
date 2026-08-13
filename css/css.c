@@ -1,16 +1,8 @@
 #include "css.h"
 #include "../DOM/DOM.h"
-#include <cstddef>
+#include "../utils/string/str_utils.h"
 #include <stddef.h>
-extern int str_starts_with(const char* str, const char* prefix);
-extern int str_len(const char* s);
-extern int str_copy(char* dst, const char* src, int max_len);
-extern int skip_spaces(const char** p);
-extern int parse_int(const char** p);
-extern int is_alpha_c(char c);
-extern int is_digit_c(char c);
-extern int hex_digit_val(char c);
-extern int str_eq(const char* a, const char* b);
+
 
 uint32_t parse_css_color(const char** p) {
     skip_spaces(p);
