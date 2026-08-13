@@ -1,5 +1,6 @@
 #include "browser.h"
-#include "js.h"
+#include "syscalls.h"
+#include "str_utils.h"
 #include "DOM.h"
 #include "css.h"
 #include "navigation.h"

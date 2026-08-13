@@ -43,8 +43,7 @@ typedef struct DOMNode {
     char input_name[64];
     char input_value[128];
     char input_type[16]; // "text", "password", "submit", "hidden", "email", ...
-    // <button type="submit"> nebo <input type="submit"> - klik na tento uzel
-    // spustí odeslání nejbližšího obklopujícího <form> (viz find_enclosing_form).
+
     int is_submit_button;
     int is_checked; // 1 = zaškrtnuto, 0 = prázdné
     // Layout bounding box 

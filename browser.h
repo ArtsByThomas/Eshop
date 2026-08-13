@@ -5,120 +5,12 @@ void debug_print(const char* text);
 // ============================================================================
 // 1. SYSTÉMOVÁ VOLÁNÍ (Komunikace s Ring 0)
 // ============================================================================
-long syscall0(long nr) {
-    long ret;
-    __asm__ volatile("syscall" : "=a"(ret) : "a"(nr) : "rcx", "r11", "memory");
-    return ret;
-}
 
-long syscall3(long nr, long arg1, long arg2, long arg3) {
-    long ret;
-    __asm__ volatile("syscall" : "=a"(ret) : "a"(nr), "D"(arg1), "S"(arg2), "d"(arg3) : "rcx", "r11", "memory");
-    return ret;
-}
-
-long syscall5(long nr, long arg1, long arg2, long arg3, long arg4, long arg5) {
-    long ret;
-    register long r10 __asm__("r10") = arg4;
-    register long r8  __asm__("r8")  = arg5;
-    __asm__ volatile("syscall" : "=a"(ret) : "a"(nr), "D"(arg1), "S"(arg2), "d"(arg3), "r"(r10), "r"(r8) : "rcx", "r11", "memory");
-    return ret;
-}
-long syscall6(long nr, long arg1, long arg2, long arg3, long arg4, long arg5, long arg6) {
-    long ret;
-    register long r10 __asm__("r10") = arg4;
-    register long r8  __asm__("r8")  = arg5;
-    register long r9  __asm__("r9")  = arg6; 
-    
-    __asm__ volatile(
-        "syscall" 
-        : "=a"(ret) 
-        : "a"(nr), "D"(arg1), "S"(arg2), "d"(arg3), "r"(r10), "r"(r8), "r"(r9) 
-        : "rcx", "r11", "memory"
-    );
-    
-    return ret;
-}
-int sys_read(int fd, char *buf, int len) { return syscall3(0, fd, (long)buf, len); }
-void sys_yield() { syscall0(24); } 
-void sys_exit()  { syscall0(60); } 
-int sys_fb_blit(const uint32_t *pixel_buf, int w, int h) { return syscall3(1010, (long)pixel_buf, (long)w, (long)h); }
-
-
-int sys_get_mouse(int *x, int *y, int *buttons) {
-    return syscall3(1012, (long)x, (long)y, (long)buttons);
-}
-
-int sys_get_window_size(int *w, int *h) {
-    return syscall3(1014, (long)w, (long)h, 0);
-}
 // ============================================================================
 // 2. POMOCNÉ FUNKCE PRO TEXT 
 // ============================================================================
-const char* strstr(const char* haystack, const char* needle) {
-    if (!*needle) return haystack; 
-    for (; *haystack; ++haystack) {
-        const char *h = haystack;
-        const char *n = needle;
-        while (*h && *n && *h == *n) { ++h; ++n; }
-        if (!*n) return haystack;
-    }
-    return 0; 
-}
-uint32_t sys_dns_resolve(const char *domain) {
-    return syscall3(1013, (long)domain, 0, 0); 
-}
-int str_starts_with(const char* str, const char* prefix) {
-    while (*prefix) {
-        if (*str != *prefix) return 0;
-        str++; prefix++;
-    }
-    return 1;
-}
-int str_eq(const char* a, const char* b) {
-    while (*a && *b) { if (*a != *b) return 0; a++; b++; }
-    return *a == *b;
-}
-int str_eq_n(const char* a, const char* b, int n) {
-    for (int i = 0; i < n; i++) {
-        if (a[i] != b[i]) return 0;
-        if (a[i] == '\0') return 1;
-    }
-    return 1;
-}
-int str_len(const char* s) { int n = 0; while (s[n]) n++; return n; }
 
-void str_copy(char* dst, const char* src, int max_len) {
-    int i = 0;
-    while (src[i] && i < max_len - 1) { dst[i] = src[i]; i++; }
-    dst[i] = '\0';
-}
 
-int is_digit_c(char c) { return c >= '0' && c <= '9'; }
-int is_space_c(char c) { return c == ' ' || c == '\t' || c == '\n' || c == '\r'; }
-int is_alpha_c(char c) { return (c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z') || c == '_' || c == '-'; }
-
-int hex_digit_val(char c) {
-    if (c >= '0' && c <= '9') return c - '0';
-    if (c >= 'a' && c <= 'f') return c - 'a' + 10;
-    if (c >= 'A' && c <= 'F') return c - 'A' + 10;
-    return -1;
-}
-
-int parse_int(const char** p) {
-    const char* s = *p;
-    int sign = 1;
-    if (*s == '-') { sign = -1; s++; }
-    if (!is_digit_c(*s)) return 0;
-    int val = 0;
-    while (is_digit_c(*s)) { val = val * 10 + (*s - '0'); s++; }
-    *p = s;
-    return val * sign;
-}
-
-void skip_spaces(const char** p) {
-    while (is_space_c(**p)) (*p)++;
-}
 
 // ============================================================================
 // 3. GLOBÁLNÍ DATA A ASSETY
@@ -137,11 +29,7 @@ int max_scroll_y = 0;
 #define IMG_POOL_SIZE 262144
 uint8_t img_pool[IMG_POOL_SIZE];
 int img_pool_used = 0;
-long sys_get_time_ms(void) {
-    long tv[2] = {0, 0}; 
-    syscall3(78, (long)tv, 0, 0);
-    return tv[0] * 1000L + tv[1] / 1000L;
-}
+
 
 int layout_dirty = 1;
 
@@ -241,9 +129,7 @@ const unsigned char font8x8[126][8] = {
     {0x7E,0x66,0x66,0x66,0x66,0x66,0x3C,0x00}, // [124] Ů
     {0x7E,0x06,0x0C,0x18,0x30,0x60,0x7E,0x00}  // [125] Ž
 };
-long vk_call(int func_id, long a1, long a2) {
-    return syscall3(1030, (long)func_id, a1, a2);
-}
+
 
 typedef struct { uint8_t b0, b1; int idx; } Utf8DiacriticEntry;
 static const Utf8DiacriticEntry utf8_diacritics_table[] = {
@@ -676,10 +562,3 @@ void draw_scrollbar(int doc_h) {
         }
     }
 }
-void debug_print(const char* text) {
-    syscall3(100, (long)text, (long)str_len(text), 0);
-}
-int sys_https_get(uint32_t ip, const char *domain, uint16_t port, const char *path, char *buf, int max_len);
-int sys_http_get(uint32_t ip, uint16_t port, const char *path, char *buf, int max_len);
-void sys_cookie_get(const char *domain, int is_https, char *out, int out_size);
-void sys_cookie_set(const char *domain, const char *cookie_str);

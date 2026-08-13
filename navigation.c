@@ -145,17 +145,6 @@ void nav_history_push(const char* url) {
 void navigate_to(const char* url);
 
 
-int collect_form_inputs(DOMNode* node, DOMNode* form, DOMNode** out, int max_count, int count) {
-    if (!node || count >= max_count) return count;
-    if (node != form && node->type == NODE_FORM) return count; // nezacházet do vnořeného formuláře
-    if (node->type == NODE_INPUT) {
-        out[count++] = node;
-    }
-    for (int i = 0; i < node->child_count && count < max_count; i++) {
-        count = collect_form_inputs(node->children[i], form, out, max_count, count);
-    }
-    return count;
-}
 
 
 void nav_go_back(void) {

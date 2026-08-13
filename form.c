@@ -3,13 +3,25 @@
 #include <stdint.h>
 
 
-extern int collect_form_inputs(DOMNode* node, DOMNode* form, DOMNode** out, int max_count, int count), str_eq(const char* a, const char* b), parse_url(const char* url, char* out_domain, char* out_path, int* out_is_https, int* out_port, int* out_is_ip), sys_https_post(uint32_t ip, const char *domain, uint16_t port, const char *path,
+extern int str_eq(const char* a, const char* b), parse_url(const char* url, char* out_domain, char* out_path, int* out_is_https, int* out_port, int* out_is_ip), sys_https_post(uint32_t ip, const char *domain, uint16_t port, const char *path,
     const char *body, int body_len, char *buf, int max_len),sys_http_post(uint32_t ip, uint16_t port, const char *path,
         const char *body, int body_len, char *buf, int max_len);
 extern void navigate_to(const char* url),url_encode(const char* src, char* out, int out_size), resolve_relative_url(const char* href, char* out, int out_size), debug_print(const char* text), process_navigation_response(const char* full_url, const char* path, int bytes) ;
 extern char* current_domain;
 extern int current_is_https, current_port;
 extern uint32_t current_ip,current_server_ip, parse_ipv4(const char* s), sys_dns_resolve(const char *domain);
+int collect_form_inputs(DOMNode* node, DOMNode* form, DOMNode** out, int max_count, int count) {
+    if (!node || count >= max_count) return count;
+    if (node != form && node->type == NODE_FORM) return count; // nezacházet do vnořeného formuláře
+    if (node->type == NODE_INPUT) {
+        out[count++] = node;
+    }
+    for (int i = 0; i < node->child_count && count < max_count; i++) {
+        count = collect_form_inputs(node->children[i], form, out, max_count, count);
+    }
+    return count;
+}
+
 void submit_form(DOMNode* form) {
     if (!form || form->type != NODE_FORM) return;
 
