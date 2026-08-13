@@ -1,11 +1,10 @@
 #include "../DOM/DOM.h"
 #include "../browser.h"
 #include <stdint.h>
+#include "../utils/string/str_utils.h"
+#include "../utils/syscall/syscalls.h"
 
 
-extern int str_eq(const char* a, const char* b), parse_url(const char* url, char* out_domain, char* out_path, int* out_is_https, int* out_port, int* out_is_ip), sys_https_post(uint32_t ip, const char *domain, uint16_t port, const char *path,
-    const char *body, int body_len, char *buf, int max_len),sys_http_post(uint32_t ip, uint16_t port, const char *path,
-        const char *body, int body_len, char *buf, int max_len);
 extern void navigate_to(const char* url),url_encode(const char* src, char* out, int out_size), resolve_relative_url(const char* href, char* out, int out_size), debug_print(const char* text), process_navigation_response(const char* full_url, const char* path, int bytes) ;
 extern char* current_domain;
 extern int current_is_https, current_port;
