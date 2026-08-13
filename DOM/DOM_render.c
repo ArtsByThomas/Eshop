@@ -1,8 +1,10 @@
 #include "DOM.h"
-#include "browser.h"
+#include "../browser.h"
 #include <stdint.h>
-#include "css.h"
-#include "js.h"
+#include "../css/css.h"
+#include "../js/headers/js_runtime.h"
+#include "../utils/syscall/syscalls.h"
+#include "../utils/string/str_utils.h"
 extern int utf8_char_len(const char* s);
 extern int str_eq(const char* a, const char* b);
 extern void js_collect_script(const char* src, int len) ;

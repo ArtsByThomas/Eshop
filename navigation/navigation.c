@@ -1,6 +1,8 @@
-#include "browser.h"
-#include "DOM.h"
-#include "css.h"
+#include "../browser.h"
+#include "../DOM/DOM.h"
+#include "../css/css.h"
+#include "../utils/string/str_utils.h"
+#include "../utils/syscall/syscalls.h"
 #include <stdint.h>
 extern DOMNode* build_dom_tree(const char* html);
 extern void js_run_page_scripts(DOMNode* page_root);

@@ -1,5 +1,5 @@
-#include "DOM.h"
-#include "browser.h"
+#include "../DOM/DOM.h"
+#include "../browser.h"
 #include <stdint.h>
 
 

@@ -1,5 +1,5 @@
 #include "DOM.h"
-#include "css.h"
+#include "../css/css.h"
 extern int str_len(const char *s);
 extern int str_eq(const char *a, const char *b);
 extern int str_eq_n(const char *a, const char *b, int n);

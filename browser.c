@@ -1,9 +1,9 @@
 #include "browser.h"
-#include "syscalls.h"
-#include "str_utils.h"
-#include "DOM.h"
-#include "css.h"
-#include "navigation.h"
+#include "/utils/syscall/syscalls.h"
+#include "/utils/string/str_utils.h"
+#include "/DOM/DOM.h"
+#include "/css/css.h"
+#include "/navigation/navigation.h"
 #define HOME_URL "http://192.168.2.1:8000/"
 extern DOMNode* alloc_node(void);
 extern DOMNode* dom_find_at_point(DOMNode* node, int doc_x, int doc_y);

@@ -1,5 +1,5 @@
 #include "css.h"
-#include "DOM.h"
+#include "../DOM/DOM.h"
 extern int str_starts_with(const char* str, const char* prefix);
 extern int str_len(const char* s);
 extern int str_copy(char* dst, const char* src, int max_len);
