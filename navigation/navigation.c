@@ -3,16 +3,12 @@
 #include "../css/css.h"
 #include "../utils/string/str_utils.h"
 #include "../utils/syscall/syscalls.h"
+#include "navigation.h"
 #include <stdint.h>
 extern DOMNode* build_dom_tree(const char* html);
 extern void js_run_page_scripts(DOMNode* page_root);
 extern void js_timers_reset(void) ;
-uint32_t current_server_ip = 0;
-char current_domain[128] = {0};
 
-char current_path[128] = "/";
-int current_is_https = 1; 
-int current_port = 0;      
 
 
 void resolve_relative_url(const char* href, char* out, int out_size) {
@@ -69,18 +65,7 @@ int sys_http_get(uint32_t ip, uint16_t port, const char *path, char *buf, int ma
 
 // --- POST varianty (formuláře) ---
 
-typedef struct {
-    int body_len;
-    char *resp_buf;
-    int resp_max;
-} HttpPostArgs;
 
-typedef struct {
-    const char *body;
-    int body_len;
-    char *resp_buf;
-    int resp_max;
-} HttpsPostArgs;
 
 // sys_http_post: HTTP POST s tělem requestu 
 int sys_http_post(uint32_t ip, uint16_t port, const char *path,
@@ -115,18 +100,6 @@ void sys_cookie_set(const char *domain, const char *cookie_str) {
     syscall5(1019, (long)domain, (long)cookie_str, 0, 0, 0);
 }
 
-char address_bar_text[128] = "example.com/";
-int address_bar_len = 12;
-int address_bar_focused = 0;
-DOMNode* focused_input = 0; // Ukazatel na právě vybrané textové pole ve stránce
-DOMNode* hovered_node = 0; // Element, nad kterým je právě kurzor
-
-#define MAX_HISTORY 64
-char nav_history[MAX_HISTORY][128];
-int nav_history_count = 0;
-int nav_history_pos = -1;    
-int nav_history_navigating = 0; // 1 = právě navigujeme  back/forward (nepřidávat znovu do historie)
-#define HOME_URL "http://192.168.2.1:8000/"
 
 // Přidá URL na konec historie 
 void nav_history_push(const char* url) {
@@ -221,8 +194,7 @@ void debug_print_int(int num) {
     
     debug_print(buf);
 }
-int bytes_global;
-// Sdílená "po stažení" logika pro navigate_to (GET) i navigate_to_post
+s// Sdílená "po stažení" logika pro navigate_to (GET) i navigate_to_post
 
 void process_navigation_response(const char* full_url, const char* path, int bytes) {
     bytes_global = bytes;

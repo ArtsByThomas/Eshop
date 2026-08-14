@@ -6,20 +6,13 @@
 #include "../utils/syscall/syscalls.h"
 #include "../utils/string/str_utils.h"
 extern int utf8_char_len(const char* s);
-extern int str_eq(const char* a, const char* b);
 extern void js_collect_script(const char* src, int len) ;
 extern void compute_style_tree(DOMNode* n, ComputedStyle* parent_style);
 extern int text_pixel_width(int len, int font_scale);
 extern void resolve_relative_url(const char* href, char* out, int out_size);
 extern int parse_url(const char* url, char* out_domain, char* out_path, int* out_is_https, int* out_port, int* out_is_ip);
-void draw_border_user(int x, int y, int w, int h, int border_w, uint32_t color) ;
-extern int str_len(const char* s);
 extern int browser_width;
-extern uint32_t sys_dns_resolve(const char *domain);
 extern DOMNode* alloc_node(void);
-extern void str_copy(char* dst, const char* src, int max_len);
-extern int str_eq_n(const char* a, const char* b, int n);
-extern int str_starts_with(const char* str, const char* prefix);
 extern int js_script_block_count;
 extern int img_pool_used;
 extern int browser_height;
