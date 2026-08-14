@@ -3,11 +3,10 @@
 #include "../css/css.h"
 #include "../utils/string/str_utils.h"
 #include "../utils/syscall/syscalls.h"
-#include "navigation.h"
+#include "../js/headers/js_runtime.h" // Přidáno pro js_run_page_scripts a js_timers_reset
+#include "/navigation.h"
 #include <stdint.h>
-extern DOMNode* build_dom_tree(const char* html);
-extern void js_run_page_scripts(DOMNode* page_root);
-extern void js_timers_reset(void) ;
+
 
 
 
@@ -194,7 +193,7 @@ void debug_print_int(int num) {
     
     debug_print(buf);
 }
-s// Sdílená "po stažení" logika pro navigate_to (GET) i navigate_to_post
+// Sdílená "po stažení" logika pro navigate_to (GET) i navigate_to_post
 
 void process_navigation_response(const char* full_url, const char* path, int bytes) {
     bytes_global = bytes;

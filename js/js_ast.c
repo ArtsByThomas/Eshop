@@ -1,9 +1,7 @@
 #include "headers/js_ast.h"
 #include "headers/js_lexer.h" // Potřebuje znát typy tokenů a přistupovat k js_tokens
-#include "../str_utils.h"
+#include "../utils/string/str_utils.h"
 // Externí string funkce
-extern void str_copy(char* dest, const char* src, size_t n);
-
 // --- FYZICKÁ ALOKACE PAMĚTI PRO AST ---
 AstNode js_ast_pool[MAX_AST_NODES];
 int js_ast_count = 0;

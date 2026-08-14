@@ -5,21 +5,9 @@
 #include "../js/headers/js_runtime.h"
 #include "../utils/syscall/syscalls.h"
 #include "../utils/string/str_utils.h"
-extern int utf8_char_len(const char* s);
+#include "../navigation/navigation.h"
 extern void js_collect_script(const char* src, int len) ;
-extern void compute_style_tree(DOMNode* n, ComputedStyle* parent_style);
 extern int text_pixel_width(int len, int font_scale);
-extern void resolve_relative_url(const char* href, char* out, int out_size);
-extern int parse_url(const char* url, char* out_domain, char* out_path, int* out_is_https, int* out_port, int* out_is_ip);
-extern int browser_width;
-extern DOMNode* alloc_node(void);
-extern int js_script_block_count;
-extern int img_pool_used;
-extern int browser_height;
-extern void parse_css_block(const char* content);
-extern  uint32_t current_server_ip;
-extern const char * current_domain;
-extern uint32_t parse_ipv4(const char* s) ;
 int layout_text(DOMNode* node, int wrap_w) {
     int scale = node->style.font_scale;
     int line_h = 8 * scale + 2;

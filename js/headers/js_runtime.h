@@ -78,8 +78,12 @@ typedef struct {
 } JSFunc;
 JSFunc js_functions[MAX_JS_FUNCS];
 int js_func_count = 0;
-
-
+int js_timers_tick(void);
+int js_fire_click_bubbling(DOMNode* page_root, DOMNode* node);
+int dom_collect_ancestor_chain(DOMNode* root, DOMNode* target, DOMNode** out_chain, int max_len);
+DOMNode* dom_find_at_point(DOMNode* node, int doc_x, int doc_y);
+DOMNode* find_enclosing_form(DOMNode* page_root, DOMNode* target);
+void url_encode(const char* src, char* out, int out_size) ;
 JSValue js_return_value;
 int js_returning = 0;
 

@@ -1,35 +1,14 @@
 #include "browser.h"
 #include "/utils/syscall/syscalls.h"
 #include "/utils/string/str_utils.h"
+#include "/js/headers/js_runtime.h"
+#include "/form/form.h"
 #include "/DOM/DOM.h"
+#include "/DOM/DOM_render.h"
 #include "/css/css.h"
 #include "/navigation/navigation.h"
+#include "browser.h"
 #define HOME_URL "http://192.168.2.1:8000/"
-extern DOMNode* alloc_node(void);
-extern DOMNode* dom_find_at_point(DOMNode* node, int doc_x, int doc_y);
-extern void navigate_to(const char* url);
-extern void layout_dom_node(DOMNode* node, int start_x, int start_y, int avail_w, int* out_w, int* out_h);
-extern void paint_dom_node(DOMNode* node);
-extern int dom_collect_ancestor_chain(DOMNode* root, DOMNode* target, DOMNode** out_chain, int max_len);
-extern int js_fire_click_bubbling(DOMNode* page_root, DOMNode* node);
-extern int js_timers_tick(void);
-extern int address_bar_focused;
-extern int address_bar_len;
-extern char address_bar_text[128];
-extern int scroll_y;
-extern int max_scroll_y;
-extern int nav_history_pos;
-extern int nav_history_count;
-extern void nav_go_back(void);
-extern void nav_go_forward(void);
-extern void nav_reload(void);
-extern void nav_go_home(void);
-extern void submit_form(DOMNode* form);
-extern DOMNode* get_clicked_link(DOMNode* node, int doc_x, int doc_y);
-extern DOMNode* find_enclosing_form(DOMNode* node, DOMNode* submit_btn);
-extern void resolve_relative_url(const char* href, char* out, int out_size);
-extern void compute_style_tree(DOMNode* node, ComputedStyle* parent_style);
-extern  void render_dom_node(DOMNode* node, int start_x, int start_y, int* out_w, int* out_h);
 int update_window_size(void) {
     int w = browser_width, h = browser_height;
     sys_get_window_size(&w, &h);  

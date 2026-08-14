@@ -4,28 +4,10 @@
 #include "headers/js_lexer.h"   // Pro js_tokenize
 #include "headers/js_ast.h"   // Pro js_tokenize
 #include "../DOM.h"
+#include "../utils/string/str_utils.h"
 #include "../css.h"
 
 // --- OSTATNÍ EXTERNÍ ZÁVISLOSTI ZE SYSTÉMU ---
-extern void compute_style(DOMNode* n, ComputedStyle* parent_style);
-extern long sys_get_time_ms(void);
-extern void str_copy(char* dest, const char* src, size_t n);
-extern int str_eq(const char* a, const char* b);
-extern int str_len(const char* s);
-extern void sys_cookie_set(const char *domain, const char *cookie_str);
-extern int current_is_https, layout_dirty;
-extern int skip_spaces(const char** p), parse_int(const char** p);
-extern int parse_ipv4(const char* s), sys_dns_resolve(const char *domain);
-extern int has_class(const char* class_attr, const char* target);
-extern DOMNode* alloc_node();
-extern void resolve_relative_url(const char* href, char* out, int out_size);
-extern int parse_url(const char* url, char* out_domain, char* out_path, int* out_is_https, int* out_port, int* out_is_ip);
-extern int sys_https_get(uint32_t ip, const char *domain, uint16_t port, const char *path, char *buf, int max_len);
-extern int sys_http_get(uint32_t ip, uint16_t port, const char *path, char *buf, int max_len);
-extern void sys_cookie_get(const char *domain, int is_https, char *out, int out_size);
-extern uint32_t target_ip, current_server_ip, parse_css_color(const char** p);
-extern int parse_css_length(const char** p);
-extern char* current_domain;
 
 // --- FYZICKÁ ALOKACE PAMĚTI PRO BĚH ENGÍNU ---
 
@@ -67,7 +49,6 @@ static void js_timer_clear(int id) {
 }
 
 
-int js_timers_tick(void);
 
 void js_timers_reset(void) {
     for (int i = 0; i < MAX_TIMERS; i++) js_timers[i].active = 0;

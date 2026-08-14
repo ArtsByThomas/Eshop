@@ -1,3 +1,9 @@
+#ifndef DOM_H
+#define DOM_H
+
+#include <stdint.h>
+#include "../css/css.h" // Pro strukturu ComputedStyle
+
 #define MAX_NODES 512
 #define MAX_CHILDREN 64
 
@@ -21,8 +27,8 @@ typedef enum {
 typedef struct DOMNode {
     NodeType type;
     char tag_name[16];     // "div", "p", "h1", ... 
-    char class_name[64];    // obsah atributu class="..." (jen první třída, viz pozn. níže)
-    char id_name[64];       // obsah atributu id="..."
+    char class_name[64];   // obsah atributu class="..." (jen první třída, viz pozn. níže)
+    char id_name[64];      // obsah atributu id="..."
 
     ComputedStyle style;    
 
@@ -55,8 +61,16 @@ typedef struct DOMNode {
     int cached_chars_per_line; // uloženo v layout_text, použito v paint_text 
 } DOMNode;
 
-DOMNode node_pool[MAX_NODES];
-int nodes_allocated = 0;
+// Globální proměnné musí být exportované pomocí extern
+extern DOMNode node_pool[MAX_NODES];
+extern int nodes_allocated;
+extern DOMNode* root_node;
 extern DOMNode* hovered_node;
 extern DOMNode* focused_input;
-DOMNode* root_node = 0;
+
+// Hlavní funkce
+DOMNode* alloc_node(void);
+DOMNode* get_clicked_link(DOMNode* node, int doc_x, int doc_y);
+void compute_style_tree(DOMNode* n, ComputedStyle* parent_style);
+
+#endif // DOM_H

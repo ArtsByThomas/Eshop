@@ -1,8 +1,9 @@
 #include "DOM.h"
+#include "../utils/string/str_utils.h"
 #include "../css/css.h"
-extern int str_len(const char *s);
-extern int str_eq(const char *a, const char *b);
-extern int str_eq_n(const char *a, const char *b, int n);
+DOMNode node_pool[MAX_NODES];
+int nodes_allocated = 0;
+DOMNode* root_node = 0;
 DOMNode* alloc_node() {
     if (nodes_allocated >= MAX_NODES) {
         return 0;

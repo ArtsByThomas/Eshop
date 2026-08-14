@@ -3,12 +3,9 @@
 #include <stdint.h>
 #include "../utils/string/str_utils.h"
 #include "../utils/syscall/syscalls.h"
-
-
-extern void navigate_to(const char* url),url_encode(const char* src, char* out, int out_size), resolve_relative_url(const char* href, char* out, int out_size), debug_print(const char* text), process_navigation_response(const char* full_url, const char* path, int bytes) ;
-extern char* current_domain;
-extern int current_is_https, current_port;
-extern uint32_t current_ip,current_server_ip, parse_ipv4(const char* s), sys_dns_resolve(const char *domain);
+#include "../navigation/navigation.h"
+#include "../utils/syscall/syscalls.h"
+#include "../js/headers/js_runtime.h"
 int collect_form_inputs(DOMNode* node, DOMNode* form, DOMNode** out, int max_count, int count) {
     if (!node || count >= max_count) return count;
     if (node != form && node->type == NODE_FORM) return count; // nezacházet do vnořeného formuláře

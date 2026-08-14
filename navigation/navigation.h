@@ -1,12 +1,7 @@
 #ifndef NAVIGATION_H
 #define NAVIGATION_H
 
-#include "../browser.h"
-#include "../DOM/DOM.h"
-#include "../css/css.h"
-#include "../utils/string/str_utils.h"
-#include "../utils/syscall/syscalls.h"
-#include <stdint.h>
+
 
 // --- Makra ---
 #define MAX_HISTORY 64
@@ -38,22 +33,12 @@ extern char address_bar_text[128];
 extern int address_bar_len;
 extern int address_bar_focused;
 
-extern DOMNode* focused_input; // Ukazatel na právě vybrané textové pole ve stránce
-extern DOMNode* hovered_node;  // Element, nad kterým je právě kurzor
-
 extern char nav_history[MAX_HISTORY][128];
 extern int nav_history_count;
 extern int nav_history_pos;    
 extern int nav_history_navigating; // 1 = právě navigujeme back/forward (nepřidávat znovu)
 
 extern int bytes_global;
-
-
-// --- Externí JS a DOM funkce ---
-extern DOMNode* build_dom_tree(const char* html);
-extern void js_run_page_scripts(DOMNode* page_root);
-extern void js_timers_reset(void);
-
 
 // --- Síťové volání (Syscalls a HTTP/HTTPS) ---
 // Plain HTTP (bez TLS)

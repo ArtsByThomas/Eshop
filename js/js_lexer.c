@@ -1,10 +1,8 @@
 #include "headers/js_lexer.h"
+#include "../utils/string/str_utils.h"
 #include <stddef.h>
 
 // Externí funkce, které lexer potřebuje (nebo přidej hlavičku, kde jsou definované)
-extern int is_space_c(char c);
-extern int is_digit_c(char c);
-extern int str_eq(const char* a, const char* b);
 
 // --- FYZICKÁ ALOKACE GLOBÁLNÍCH PROMĚNNÝCH LEXERU ---
 Token js_tokens[MAX_TOKENS];
