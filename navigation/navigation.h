@@ -22,7 +22,7 @@ typedef struct {
 } HttpsPostArgs;
 
 
-// --- Globální proměnné (deklarace pomocí extern) ---
+// --- Globální proměnné  ---
 extern uint32_t current_server_ip;
 extern char current_domain[128];
 extern char current_path[128];

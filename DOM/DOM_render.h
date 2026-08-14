@@ -12,8 +12,7 @@ void layout_dom_node(DOMNode* node, int start_x, int start_y, int avail_w, int* 
 void paint_dom_node(DOMNode* node);
 
 // --- Pomocné funkce pro text a atributy ---
-// (Poznámka: Pokud je voláš pouze z DOM_render.c, můžeš je odsud smazat 
-// a v .c souboru je označit jako static)
+
 int layout_text(DOMNode* node, int wrap_w);
 void paint_text(DOMNode* node, int x, int y, int wrap_w);
 int extract_attr(const char* tag_start, const char* tag_end, const char* attr_name, char* out, int out_size);

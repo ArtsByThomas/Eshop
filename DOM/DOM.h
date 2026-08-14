@@ -61,7 +61,6 @@ typedef struct DOMNode {
     int cached_chars_per_line; // uloženo v layout_text, použito v paint_text 
 } DOMNode;
 
-// Globální proměnné musí být exportované pomocí extern
 extern DOMNode node_pool[MAX_NODES];
 extern int nodes_allocated;
 extern DOMNode* root_node;
