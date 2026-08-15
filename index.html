@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<style>
+    /* Body */
+    :root{
+        --main-color-background: black;
+        --main-color-text: white;
+        --main-color-item-background:rgb(237, 237, 237);
+    }
+    *{
+        list-style-type: none;
+        margin: 0;
+        padding: 0;
+        text-decoration: none;
+
+    }
+    body{
+    padding: 1rem;
+    height: 100dvh;
+
+    }
+    main, nav{
+        display: flex;
+    }
+   
+
+    /* Navigation */
+    nav{
+        padding-bottom: 1rem;
+    align-items: center;
+}
+ nav input {
+    width: 100%;
+    border: 0;
+    outline: 0;
+    height: fit-content;
+}
+
+    nav ul{
+        margin-left: auto;
+        display: inherit;
+        gap: .5rem;
+    }
+
+    /* Main */
+   
+    #items {
+    display: grid;
+grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));    
+   gap: 1rem;
+}
+.item-title{
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+.item{
+    background-color: var(--main-color-item-background);
+    padding: .5rem;
+    display: flex;
+        flex-direction: column;
+
+    gap: 1.5rem;
+}
+    .item img{
+        width: 100%;
+    }
+    .item-buttons{
+        margin-left: auto;
+        display: flex;
+        gap: .5rem;
+    }
+    .item-buttons input{
+        display: none;
+         width: 3ch; 
+    box-sizing: content-box;
+    }
+    .item-buttons a{
+
+        padding: .2rem;
+        background-color: var(--main-color-background);
+        color: var(--main-color-text);
+    }
+</style>
+<body>
+    <nav>
+        <input type="text" placeholder="ahoj">
+        <ul>
+            <li>
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-shopping-bag"><path stroke="none" d="M0 0h24v24H0z" fill="none" /><path d="M6.331 8h11.339a2 2 0 0 1 1.977 2.304l-1.255 8.152a3 3 0 0 1 -2.966 2.544h-6.852a3 3 0 0 1 -2.965 -2.544l-1.255 -8.152a2 2 0 0 1 1.977 -2.304" /><path d="M9 11v-5a3 3 0 0 1 6 0v5" /></svg>
+            </li>
+            <li><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-user"><path stroke="none" d="M0 0h24v24H0z" fill="none" /><path d="M8 7a4 4 0 1 0 8 0a4 4 0 0 0 -8 0" /><path d="M6 21v-2a4 4 0 0 1 4 -4h4a4 4 0 0 1 4 4v2" /></svg>
+            </li>
+        </ul>
+    </nav>
+    <main id="items">
+
+    </main>
+    <script >
+        for (let index = 0; index < 20; index++) {
+            document.getElementById("items").innerHTML += `
+    <div class="item">
+        <div class="item-title">
+            <img src="https://placehold.co/600x400/png" alt="">
+            <ul>
+                <li>tohle je item</li>
+                <li>ahoj</li>
+            </ul>
+        </div>
+        <ul class="item-buttons">
+            <input type="number" value="0" oninput="if(this.value > 10) this.value = 10;">
+            <a href="">koupit</a>
+        </ul>
+    </div>
+`;
+        }
+
+    </script>
+</body>
+</html>
