@@ -64,14 +64,18 @@ grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
     padding: .5rem;
     display: flex;
         flex-direction: column;
-
+border-radius: .5rem;
     gap: 1.5rem;
+}
+.item, .item-buttons a,.item img,.dropdown{
+    border-radius: .5rem;
+
 }
     .item img{
         width: 100%;
     }
     .item-buttons{
-        margin-left: auto;
+        width: 100%;
         display: flex;
         gap: .5rem;
     }
@@ -81,26 +85,72 @@ grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
     box-sizing: content-box;
     }
     .item-buttons a{
-
-        padding: .2rem;
+        text-align: center;
+width: 100%;
+        padding: .5rem;
         background-color: var(--main-color-background);
         color: var(--main-color-text);
     }
+ 
+    
+    nav ul > li {
+        position: relative;
+        cursor: pointer;
+    }
+
+    .dropdown {
+        display: none;
+        position: absolute;
+        top: 100%; 
+        right: 0; 
+        background-color: white;
+        padding: 1rem;
+        flex-direction: column;
+        
+        list-style: none;
+        min-width: 80px;
+        box-shadow: 0px 4px 6px rgba(0,0,0,0.1); 
+        border: 1px solid #ddd;
+    }
+    
+    .dropdown li {
+        padding: 8px 0;
+    }
+    footer{
+        background-color: black;
+        color: white;
+        padding: 1rem;
+    }
 </style>
-<body>
+<body >
     <nav>
         <input type="text" placeholder="ahoj">
-        <ul>
-            <li>
+      <ul>
+            <li id="user-shop">
                 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-shopping-bag"><path stroke="none" d="M0 0h24v24H0z" fill="none" /><path d="M6.331 8h11.339a2 2 0 0 1 1.977 2.304l-1.255 8.152a3 3 0 0 1 -2.966 2.544h-6.852a3 3 0 0 1 -2.965 -2.544l-1.255 -8.152a2 2 0 0 1 1.977 -2.304" /><path d="M9 11v-5a3 3 0 0 1 6 0v5" /></svg>
+                
+                <ul class="dropdown" id="user-shop-dropdown">
+                    <li>sss</li>
+                </ul>
             </li>
-            <li><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-user"><path stroke="none" d="M0 0h24v24H0z" fill="none" /><path d="M8 7a4 4 0 1 0 8 0a4 4 0 0 0 -8 0" /><path d="M6 21v-2a4 4 0 0 1 4 -4h4a4 4 0 0 1 4 4v2" /></svg>
+
+            <li id="user-profile">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-user"><path stroke="none" d="M0 0h24v24H0z" fill="none" /><path d="M8 7a4 4 0 1 0 8 0a4 4 0 0 0 -8 0" /><path d="M6 21v-2a4 4 0 0 1 4 -4h4a4 4 0 0 1 4 4v2" /></svg>
+                
+                <ul class="dropdown" id="user-profile-dropdown">
+                    <li>Účet</li>
+                    <li>Nastavení</li>
+                    <li>Odhlásit se</li>
+                </ul>
             </li>
         </ul>
     </nav>
     <main id="items">
 
     </main>
+    <footer>
+        Vytvořeno s ❤️ Tomášem Valentou
+    </footer>
     <script >
         for (let index = 0; index < 20; index++) {
             document.getElementById("items").innerHTML += `
@@ -113,13 +163,55 @@ grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
             </ul>
         </div>
         <ul class="item-buttons">
-            <input type="number" value="0" oninput="if(this.value > 10) this.value = 10;">
             <a href="">koupit</a>
         </ul>
     </div>
 `;
         }
+       const profileBtn = document.getElementById('user-profile');
+const userDropdown = document.getElementById('user-profile-dropdown');
 
+const shopBtn = document.getElementById('user-shop');
+const shopDropdown = document.getElementById('user-shop-dropdown');
+
+function closeAllDropdowns() {
+    userDropdown.style.display = 'none';
+    shopDropdown.style.display = 'none';
+}
+
+shopBtn.addEventListener('click', function(event) {
+    event.stopPropagation(); 
+    const isAlreadyOpen = shopDropdown.style.display === 'flex';
+    
+    closeAllDropdowns(); 
+    
+    if (!isAlreadyOpen) {
+        shopDropdown.style.display = 'flex';
+    }
+});
+
+profileBtn.addEventListener('click', function(event) {
+    event.stopPropagation(); 
+    const isAlreadyOpen = userDropdown.style.display === 'flex';
+    
+    closeAllDropdowns(); 
+    
+    if (!isAlreadyOpen) {
+        userDropdown.style.display = 'flex';
+    }
+});
+
+document.addEventListener('click', function() {
+    closeAllDropdowns();
+});
+
+shopDropdown.addEventListener('click', function(event) {
+    event.stopPropagation();
+});
+
+userDropdown.addEventListener('click', function(event) {
+    event.stopPropagation();
+});
     </script>
 </body>
 </html>
