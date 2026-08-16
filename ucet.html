@@ -1,11 +1,114 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="cs">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <title>Účet</title>
 </head>
+<style>
+    *{ margin: 0; padding: 0; list-style-type: none; }
+    .flex-container{ display: flex; gap: 1.5rem; flex-direction: column; }
+    .flex{ display: flex; gap: 1rem; }
+    .flex-container li ul, .flex li ul { display: flex; flex-direction: column; gap: .5rem; }
+    input{ padding: .5rem; border: 1px solid #ccc; border-radius: .25rem; }
+    input:invalid { border-color: red; }
+    body{ padding: 1rem; }
+    #submit-button{ text-decoration: none; border-radius: .5rem; padding: .5rem; background-color: black; color: white; border: none; cursor: pointer; font-size: 1rem; }
+</style>
 <body>
-    
+    <form class="flex-container" id="checkoutForm">
+        <li>
+            <ul>
+                <li>Jméno a příjmení</li>
+                <li><input type="text" id="name" required></li>
+            </ul>
+        </li>
+        <li>
+            <ul>
+                <li>Ulice a číslo popisné</li>
+                <li><input type="text" id="street" required></li>
+            </ul>
+        </li>
+         <li class="flex">
+            <ul>
+                <li>PSČ</li>
+                <li><input type="text" id="zip" required></li>
+            </ul>
+            <ul>
+                <li>Město</li>
+                <li><input type="text" id="city" required></li>
+            </ul>
+        </li>
+         <li>
+            <ul>
+                <li>Telefonní číslo </li>
+                <li><input type="tel" id="phone" required></li>
+            </ul>
+        </li>
+         <li>
+            <ul>
+                <li>Kontaktní e-mail</li>
+                <li><input type="email" id="email" required></li>
+            </ul>
+        </li>
+         <li>
+            <button type="submit" id="submit-button">Uložit</button>
+        </li>
+    </form>
+
+    <script>
+        document.getElementById('phone').addEventListener('input', function (e) {
+            this.value = this.value.replace(/[^0-9+\s]/g, '');
+        });
+
+        document.addEventListener('DOMContentLoaded', async () => {
+            try {
+                const response = await fetch('profile.php');
+                const data = await response.json();
+
+                if(data && !data.error) {
+                    document.getElementById('name').value = data.name || '';
+                    document.getElementById('street').value = data.street || '';
+                    document.getElementById('zip').value = data.zip || '';
+                    document.getElementById('city').value = data.city || '';
+                    document.getElementById('phone').value = data.phone || '';
+                    document.getElementById('email').value = data.email || '';
+                }
+            } catch (error) {
+                console.error("Nepodařilo se načíst data z JSONu:", error);
+            }
+        });
+
+        document.getElementById('checkoutForm').addEventListener('submit', async (e) => {
+            e.preventDefault(); 
+            
+            const data = {
+                name: document.getElementById('name').value,
+                street: document.getElementById('street').value,
+                zip: document.getElementById('zip').value,
+                city: document.getElementById('city').value,
+                phone: document.getElementById('phone').value,
+                email: document.getElementById('email').value 
+            };
+
+            try {
+                const response = await fetch('profile.php', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(data)
+                });
+                const result = await response.json();
+                
+                if(result.success) {
+                    alert(result.message);
+                } else {
+                    alert("Chyba: " + result.message); 
+                }
+            } catch (error) {
+                console.error("Chyba při odesílání:", error);
+                alert("Nepodařilo se odeslat data na server.");
+            }
+        });
+    </script>
 </body>
 </html>

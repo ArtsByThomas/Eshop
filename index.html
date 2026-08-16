@@ -135,7 +135,9 @@ width: 100%;
         display: flex;
         align-items: center;
     }
-
+#user-profile-dropdown li:hover{
+    text-decoration: underline;
+}
 footer {
     background-color: black;
     color: white;
@@ -168,7 +170,6 @@ footer {
                 
                 <ul class="dropdown" id="user-profile-dropdown">
                   <a href="ucet.html"><li>Účet</li></a>  
-                   <a href="nastaveni.html"><li>Nastavení</li></a> 
                     <li>Odhlásit se</li>
                 </ul>
             </li>
@@ -181,22 +182,35 @@ footer {
         Vytvořeno s ❤️ Tomášem Valentou
     </footer>
     <script >
-        for (let index = 0; index < 20; index++) {
-            document.getElementById("items").innerHTML += `
-    <div class="item">
+        async function fetchProducts() {
+    try {
+        const response = await fetch('products.php'); 
+        const products = await response.json();
+        
+        const itemsContainer = document.getElementById("items");
+        itemsContainer.innerHTML = ''; 
+
+        products.forEach(product => {
+            itemsContainer.innerHTML += `
+              <div class="item">
         <div class="item-title">
             <img src="https://placehold.co/600x400/png" alt="">
             <ul>
-                <li>tohle je item</li>
+                <li>${product.name}</li>
                 <li>ahoj</li>
             </ul>
         </div>
         <ul class="item-buttons">
-            <a href="">koupit</a>
+            <a href="">${product.price}</a>
         </ul>
     </div>
-`;
-        }
+            `;
+        });
+    } catch (error) {
+    }
+}
+fetchProducts();
+     
        const profileBtn = document.getElementById('user-profile');
 const userDropdown = document.getElementById('user-profile-dropdown');
 
