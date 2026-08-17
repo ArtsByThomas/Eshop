@@ -3,9 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Pokladna - Dokončení objednávky</title>
+    <title>Pokladna</title>
     <style>
-        /* --- MINIMALISTICKÝ ZÁKLAD --- */
         :root {
             --bg-color: #fafafa;
             --text-main: #111111;
@@ -47,6 +46,9 @@
             min-width: 320px;
             box-shadow: 0 10px 30px rgba(0,0,0,0.03);
             border: 1px solid var(--border-color);
+            
+            display: flex;
+            flex-direction: column;
         }
 
         h2 {
@@ -57,34 +59,34 @@
             padding-bottom: 0.8rem;
         }
         
-        /* Styly pro košík */
-        .cart-item { 
-            display: flex; 
-            justify-content: space-between; 
-            align-items: center;
-            margin-bottom: 15px; 
-            padding-bottom: 15px; 
-            border-bottom: 1px solid #f0f0f0; 
-        }
-        .cart-total { 
-            font-size: 1.2rem; 
-            font-weight: 700; 
-            text-align: right; 
-            margin-top: 1.5rem; 
-            color: var(--text-main); 
-        }
-        
-        #cart-items-container {
-            max-height: 350px;
-            overflow-y: auto;
-            padding-right: 10px;
-        }
-        
+#cart-items-container {
+    flex-grow: 1;
+    overflow-y: auto;
+    padding-right: 10px;
+    margin-bottom: 1.5rem;
+    max-height: 400px;
+}
+
+.cart-item { 
+    display: flex; 
+    justify-content: space-between; 
+    align-items: center;
+    margin-bottom: 10px;
+    padding-bottom: 10px; 
+    border-bottom: 1px solid #f0f0f0; 
+    font-size: 0.95rem; 
+}
         #cart-items-container::-webkit-scrollbar { width: 6px; }
         #cart-items-container::-webkit-scrollbar-track { background: transparent; }
         #cart-items-container::-webkit-scrollbar-thumb { background: #ccc; border-radius: 10px; }
 
-        /* Styly pro formulář */
+        
+        #checkout-form {
+            display: flex;
+            flex-direction: column;
+            flex-grow: 1;
+        }
+
         .form-group { margin-bottom: 1.2rem; }
         label { 
             display: block; 
@@ -114,6 +116,22 @@
         .flex-row { display: flex; gap: 15px; }
         .flex-row > div { flex: 1; }
 
+        
+        .bottom-action {
+            margin-top: auto;
+        }
+
+        .cart-total { 
+            font-size: 1.2rem; 
+            font-weight: 700; 
+            color: var(--text-main); 
+            display: flex;
+            justify-content: flex-end;
+            align-items: center;
+            height: 54px; 
+            margin-top: 0;
+        }
+
         button { 
             width: 100%; 
             padding: 15px; 
@@ -124,11 +142,19 @@
             border: none; 
             border-radius: 8px; 
             cursor: pointer; 
-            margin-top: 1.5rem; 
+            margin-top: 0;
+            height: 54px; 
             transition: opacity 0.2s; 
         }
         button:hover { opacity: 0.8; }
-        #status-message { margin-top: 1rem; text-align: center; font-weight: 600; font-size: 0.9rem; }
+        
+        #status-message, .status-spacer { 
+            min-height: 20px; 
+            margin-top: 1rem; 
+            text-align: center; 
+            font-weight: 600; 
+            font-size: 0.9rem; 
+        }
     </style>
 </head>
 <body>
@@ -137,17 +163,19 @@
 
     <div class="checkout-wrapper">
         
-        <!-- LEVÝ SLOUPEC: Rekapitulace košíku -->
         <div class="box">
             <h2>Váš nákup</h2>
             <div id="cart-items-container">
             </div>
-            <div class="cart-total" id="cart-total">
-                Celkem: 0 Kč
+            
+            <div class="bottom-action">
+                <div class="cart-total" id="cart-total">
+                    Celkem: 0 Kč
+                </div>
+                <div class="status-spacer"></div> 
             </div>
         </div>
 
-        <!-- PRAVÝ SLOUPEC: Formulář s dodacími údaji -->
         <div class="box">
             <h2>Dodací údaje</h2>
             <form id="checkout-form">
@@ -182,8 +210,10 @@
                     <input type="email" id="email" required>
                 </div>
                 
-                <button type="submit">Odeslat objednávku</button>
-                <div id="status-message"></div>
+                <div class="bottom-action">
+                    <button type="submit">Odeslat objednávku</button>
+                    <div id="status-message"></div>
+                </div>
             </form>
         </div>
 

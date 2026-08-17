@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Moderní E-shop</title>
     <style>
-        /* --- MINIMALISTICKÝ ZÁKLAD --- */
         :root {
             --bg-color: #fafafa;
             --text-main: #111111;
@@ -30,7 +29,6 @@
             color: var(--text-main);
         }
 
-        /* --- MODERNÍ NAVIGACE --- */
         nav {
             display: flex;
             padding: 1.2rem 2rem;
@@ -165,7 +163,6 @@
         .filter-pill.active { background: var(--accent); border-color: var(--accent); color: white; }
 
         /* --- VÝPIS PRODUKTŮ --- */
-     /* --- VÝPIS PRODUKTŮ --- */
 main#items {
     max-width: 1400px;
     margin: 0 auto;
@@ -175,7 +172,7 @@ main#items {
     grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));    
     gap: 2rem;
     flex: 1;
-    align-content: start; /* TOTO ZABRÁNÍ NATAHOVÁNÍ KARET */
+    align-content: start; 
 }
         .item {
             background-color: var(--card-bg);
@@ -263,7 +260,6 @@ main#items {
         }
         .modal-close:hover { color: var(--text-main); background: #eee; }
 
-        /* Vylepšená sekce pro dynamickou galerii */
         .modal-gallery { 
             flex: 1.2; 
             background: #f4f4f4; 
@@ -291,7 +287,7 @@ main#items {
             border-radius: 50%;
             cursor: pointer;
             font-size: 1.2rem;
-            display: none; /* Skryté, pokud je jen 1 fotka */
+            display: none; 
             align-items: center;
             justify-content: center;
             box-shadow: 0 4px 12px rgba(0,0,0,0.1);
@@ -386,13 +382,11 @@ main#items {
     <main id="items"></main>
     <footer>Vytvořeno s ❤️ Tomášem Valentou</footer>
 
-    <!-- MODALNÍ OKNO PRO DETAIL PRODUKTU -->
     <div id="product-modal" class="modal-overlay">
         <div class="modal-content" onclick="event.stopPropagation()">
             <span class="modal-close" onclick="closeModal()">&times;</span>
             
             <div class="modal-gallery">
-                <!-- Nové ovládání galerie -->
                 <button class="gallery-arrow left" onclick="prevImage()">❮</button>
                 <img id="modal-img" src="" alt="">
                 <button class="gallery-arrow right" onclick="nextImage()">❯</button>
