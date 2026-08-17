@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pokladna - Dokončení objednávky</title>
+    <style>
+        /* --- MINIMALISTICKÝ ZÁKLAD --- */
+        :root {
+            --bg-color: #fafafa;
+            --text-main: #111111;
+            --text-muted: #777777;
+            --card-bg: #ffffff;
+            --border-color: #eaeaea;
+            --accent: #111111;
+        }
+
+        body { 
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            padding: 2rem; 
+            background: var(--bg-color); 
+            color: var(--text-main); 
+            line-height: 1.5; 
+            margin: 0;
+        }
+
+        h1 {
+            text-align: center;
+            margin-bottom: 2.5rem;
+            font-size: 2rem;
+            letter-spacing: -0.5px;
+        }
+
+        .checkout-wrapper { 
+            display: flex; 
+            flex-wrap: wrap; 
+            gap: 2rem; 
+            max-width: 1000px; 
+            margin: 0 auto; 
+        }
+
+        .box { 
+            background: var(--card-bg); 
+            padding: 2.5rem; 
+            border-radius: 16px; 
+            flex: 1; 
+            min-width: 320px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.03);
+            border: 1px solid var(--border-color);
+        }
+
+        h2 {
+            margin-top: 0;
+            margin-bottom: 1.5rem;
+            font-size: 1.25rem;
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 0.8rem;
+        }
+        
+        /* Styly pro košík */
+        .cart-item { 
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center;
+            margin-bottom: 15px; 
+            padding-bottom: 15px; 
+            border-bottom: 1px solid #f0f0f0; 
+        }
+        .cart-total { 
+            font-size: 1.2rem; 
+            font-weight: 700; 
+            text-align: right; 
+            margin-top: 1.5rem; 
+            color: var(--text-main); 
+        }
+        
+        #cart-items-container {
+            max-height: 350px;
+            overflow-y: auto;
+            padding-right: 10px;
+        }
+        
+        #cart-items-container::-webkit-scrollbar { width: 6px; }
+        #cart-items-container::-webkit-scrollbar-track { background: transparent; }
+        #cart-items-container::-webkit-scrollbar-thumb { background: #ccc; border-radius: 10px; }
+
+        /* Styly pro formulář */
+        .form-group { margin-bottom: 1.2rem; }
+        label { 
+            display: block; 
+            margin-bottom: 0.5rem; 
+            font-size: 0.9rem; 
+            color: var(--text-muted); 
+            font-weight: 500;
+        }
+        input { 
+            width: 100%; 
+            padding: 12px 15px; 
+            box-sizing: border-box; 
+            background: var(--bg-color); 
+            border: 1px solid var(--border-color); 
+            color: var(--text-main); 
+            border-radius: 8px; 
+            font-size: 0.95rem;
+            transition: all 0.2s;
+        }
+        input:focus { 
+            outline: none; 
+            border-color: var(--accent); 
+            background: var(--card-bg);
+            box-shadow: 0 0 0 2px rgba(17, 17, 17, 0.1);
+        }
+        
+        .flex-row { display: flex; gap: 15px; }
+        .flex-row > div { flex: 1; }
+
+        button { 
+            width: 100%; 
+            padding: 15px; 
+            background: var(--accent); 
+            color: white; 
+            font-size: 1rem; 
+            font-weight: 600; 
+            border: none; 
+            border-radius: 8px; 
+            cursor: pointer; 
+            margin-top: 1.5rem; 
+            transition: opacity 0.2s; 
+        }
+        button:hover { opacity: 0.8; }
+        #status-message { margin-top: 1rem; text-align: center; font-weight: 600; font-size: 0.9rem; }
+    </style>
+</head>
+<body>
+
+    <h1>Dokončení objednávky</h1>
+
+    <div class="checkout-wrapper">
+        
+        <!-- LEVÝ SLOUPEC: Rekapitulace košíku -->
+        <div class="box">
+            <h2>Váš nákup</h2>
+            <div id="cart-items-container">
+            </div>
+            <div class="cart-total" id="cart-total">
+                Celkem: 0 Kč
+            </div>
+        </div>
+
+        <!-- PRAVÝ SLOUPEC: Formulář s dodacími údaji -->
+        <div class="box">
+            <h2>Dodací údaje</h2>
+            <form id="checkout-form">
+                <div class="form-group">
+                    <label for="name">Jméno a příjmení</label>
+                    <input type="text" id="name" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="street">Ulice a číslo popisné</label>
+                    <input type="text" id="street" required>
+                </div>
+                
+                <div class="flex-row">
+                    <div class="form-group">
+                        <label for="city">Město</label>
+                        <input type="text" id="city" required>
+                    </div>
+                    <div class="form-group" style="flex: 0.5;">
+                        <label for="zip">PSČ</label>
+                        <input type="text" id="zip" required>
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="phone">Telefon</label>
+                    <input type="tel" id="phone" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="email">E-mail</label>
+                    <input type="email" id="email" required>
+                </div>
+                
+                <button type="submit">Odeslat objednávku</button>
+                <div id="status-message"></div>
+            </form>
+        </div>
+
+    </div>
+
+    <script>
+        const cart = JSON.parse(localStorage.getItem('cart')) || [];
+        const cartContainer = document.getElementById('cart-items-container');
+        const cartTotal = document.getElementById('cart-total');
+        
+        let total = 0;
+
+        if (cart.length === 0) {
+            cartContainer.innerHTML = "<p style='color: #777; padding: 1rem 0;'>Váš košík je prázdný.</p>";
+        } else {
+            cart.forEach(item => {
+                const priceString = String(item.price).replace(/[^\d]/g, '');
+                const priceNum = parseInt(priceString) || 0; 
+                const itemTotal = priceNum * item.quantity;
+                total += itemTotal;
+
+                cartContainer.innerHTML += `
+                    <div class="cart-item">
+                        <div>
+                            <strong style="color: #111;">${item.name}</strong><br>
+                            <small style="color: #777;">Množství: ${item.quantity}x</small>
+                        </div>
+                        <div>
+                            <strong>${itemTotal} Kč</strong>
+                        </div>
+                    </div>
+                `;
+            });
+            cartTotal.textContent = `Celkem k úhradě: ${total} Kč`;
+        }
+
+        const API_URL = 'profile.php';
+
+        document.addEventListener('DOMContentLoaded', async () => {
+            try {
+                const response = await fetch(API_URL);
+                const data = await response.json();
+
+                if (!data.error) {
+                    document.getElementById('name').value = data.name || '';
+                    document.getElementById('street').value = data.street || '';
+                    document.getElementById('city').value = data.city || '';
+                    document.getElementById('zip').value = data.zip || '';
+                    document.getElementById('phone').value = data.phone || '';
+                    document.getElementById('email').value = data.email || '';
+                }
+            } catch (error) {
+                console.error("Chyba při načítání dat:", error);
+            }
+        });
+
+        document.getElementById('checkout-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            if (cart.length === 0) {
+                alert("Nelze odeslat prázdnou objednávku!");
+                return;
+            }
+
+            const statusMessage = document.getElementById('status-message');
+            statusMessage.style.color = "#777";
+            statusMessage.textContent = "Zpracovávám...";
+
+            const formData = {
+                name: document.getElementById('name').value,
+                street: document.getElementById('street').value,
+                city: document.getElementById('city').value,
+                zip: document.getElementById('zip').value,
+                phone: document.getElementById('phone').value,
+                email: document.getElementById('email').value
+            };
+
+            try {
+                const response = await fetch(API_URL, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(formData)
+                });
+                
+                const result = await response.json();
+
+                if (result.success) {
+                    statusMessage.style.color = "#2e7d32";
+                    statusMessage.textContent = "Objednávka byla úspěšně odeslána!";
+                } else {
+                    statusMessage.style.color = "#d32f2f";
+                    statusMessage.textContent = result.message || "Nastala chyba při ukládání.";
+                }
+            } catch (error) {
+                console.error("Chyba při odesílání:", error);
+                statusMessage.style.color = "#d32f2f";
+                statusMessage.textContent = "Kritická chyba při komunikaci se serverem.";
+            }
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Můj Účet</title>
+    <style>
+        /* --- MINIMALISTICKÝ ZÁKLAD --- */
+        :root {
+            --bg-color: #fafafa;
+            --text-main: #111111;
+            --text-muted: #777777;
+            --card-bg: #ffffff;
+            --border-color: #eaeaea;
+            --accent: #111111;
+        }
+
+        body { 
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            margin: 0; 
+            padding: 2rem; 
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        .account-card {
+            background: var(--card-bg);
+            width: 100%;
+            max-width: 500px;
+            padding: 3rem 2.5rem;
+            border-radius: 16px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.03);
+            border: 1px solid var(--border-color);
+        }
+
+        h1 {
+            margin-top: 0;
+            margin-bottom: 2rem;
+            font-size: 1.5rem;
+            text-align: center;
+            letter-spacing: -0.5px;
+        }
+
+        .form-group {
+            margin-bottom: 1.2rem;
+        }
+
+        .flex-row {
+            display: flex;
+            gap: 15px;
+        }
+
+        .flex-row > .form-group {
+            flex: 1;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-size: 0.9rem;
+            color: var(--text-muted);
+            font-weight: 500;
+        }
+
+        input {
+            width: 100%;
+            padding: 12px 15px;
+            box-sizing: border-box;
+            background: var(--bg-color);
+            border: 1px solid var(--border-color);
+            color: var(--text-main);
+            border-radius: 8px;
+            font-size: 0.95rem;
+            transition: all 0.2s;
+        }
+
+        input:focus {
+            outline: none;
+            border-color: var(--accent);
+            background: var(--card-bg);
+            box-shadow: 0 0 0 2px rgba(17, 17, 17, 0.1);
+        }
+
+        input:invalid:not(:placeholder-shown) {
+            border-color: #d32f2f;
+        }
+
+        #submit-button {
+            width: 100%;
+            margin-top: 1rem;
+            padding: 15px;
+            background-color: var(--accent);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: 600;
+            transition: opacity 0.2s;
+        }
+
+        #submit-button:hover {
+            opacity: 0.8;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="account-card">
+        <h1>Nastavení profilu</h1>
+        
+        <form id="checkoutForm">
+            <div class="form-group">
+                <label for="name">Jméno a příjmení</label>
+                <input type="text" id="name" required>
+            </div>
+
+            <div class="form-group">
+                <label for="street">Ulice a číslo popisné</label>
+                <input type="text" id="street" required>
+            </div>
+
+            <div class="flex-row">
+                <div class="form-group" style="flex: 0.5;">
+                    <label for="zip">PSČ</label>
+                    <input type="text" id="zip" required>
+                </div>
+                <div class="form-group">
+                    <label for="city">Město</label>
+                    <input type="text" id="city" required>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="phone">Telefonní číslo</label>
+                <input type="tel" id="phone" required>
+            </div>
+
+            <div class="form-group">
+                <label for="email">Kontaktní e-mail</label>
+                <input type="email" id="email" required>
+            </div>
+
+            <button type="submit" id="submit-button">Uložit změny</button>
+        </form>
+    </div>
+
+    <script>
+        document.getElementById('phone').addEventListener('input', function (e) {
+            this.value = this.value.replace(/[^0-9+\s]/g, '');
+        });
+
+        document.addEventListener('DOMContentLoaded', async () => {
+            try {
+                const response = await fetch('profile.php');
+                const data = await response.json();
+
+                if(data && !data.error) {
+                    document.getElementById('name').value = data.name || '';
+                    document.getElementById('street').value = data.street || '';
+                    document.getElementById('zip').value = data.zip || '';
+                    document.getElementById('city').value = data.city || '';
+                    document.getElementById('phone').value = data.phone || '';
+                    document.getElementById('email').value = data.email || '';
+                }
+            } catch (error) {
+                console.error("Nepodařilo se načíst data z JSONu:", error);
+            }
+        });
+
+        document.getElementById('checkoutForm').addEventListener('submit', async (e) => {
+            e.preventDefault(); 
+            
+            const data = {
+                name: document.getElementById('name').value,
+                street: document.getElementById('street').value,
+                zip: document.getElementById('zip').value,
+                city: document.getElementById('city').value,
+                phone: document.getElementById('phone').value,
+                email: document.getElementById('email').value 
+            };
+
+            try {
+                const response = await fetch('profile.php', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(data)
+                });
+                const result = await response.json();
+                
+                if(result.success) {
+                    alert(result.message);
+                } else {
+                    alert("Chyba: " + result.message); 
+                }
+            } catch (error) {
+                console.error("Chyba při odesílání:", error);
+                alert("Nepodařilo se odeslat data na server.");
+            }
+        });
+    </script>
+</body>
+</html>
