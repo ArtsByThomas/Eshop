@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Obnova hesla</title>
+    <style>
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f9f9f9; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; }
+        .auth-card { background: white; padding: 40px; border-radius: 12px; box-shadow: 0 4px 20px rgba(0,0,0,0.05); width: 100%; max-width: 400px; }
+        .auth-card h1 { text-align: center; margin-top: 0; color: #111; font-size: 24px;}
+        .form-group { margin-bottom: 20px; }
+        .form-group label { display: block; margin-bottom: 8px; font-weight: 500; color: #333; }
+        .form-group input { width: 100%; padding: 12px; border: 1px solid #ccc; border-radius: 8px; box-sizing: border-box; font-size: 15px; }
+        .btn { width: 100%; padding: 12px; background: #111; color: white; border: none; border-radius: 8px; font-size: 16px; font-weight: 600; cursor: pointer; transition: background 0.2s; }
+        .btn:hover { background: #333; }
+        .back-link { display: block; text-align: center; margin-top: 20px; text-decoration: none; color: #777; font-size: 14px; }
+    </style>
+</head>
+<body>
+    <div class="auth-card">
+        <h1>Obnova hesla</h1>
+        <p style="text-align: center; color: #666; font-size: 14px; margin-bottom: 25px;">Zadejte svůj registrační e-mail a my vám pošleme instrukce k obnově hesla.</p>
+        
+        <form id="reset-form">
+            <div class="form-group">
+                <label for="reset-email">E-mail</label>
+                <input type="email" id="reset-email" required placeholder="vas@email.cz">
+            </div>
+            <button type="submit" class="btn">Odeslat e-mail</button>
+        </form>
+        
+        <a href="login.html" class="back-link">← Zpět na přihlášení</a>
+    </div>
+
+    <script>
+        document.getElementById('reset-form').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            const email = document.getElementById('reset-email').value;
+            
+            try {
+                // Odeslání požadavku do auth.php (akce reset_request)
+                const response = await fetch('auth.php?action=reset_request', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email: email })
+                });
+                const result = await response.json();
+                
+                // Zobrazí hlášku ze serveru
+                alert(result.message); 
+                
+            } catch (error) {
+                console.error("Chyba:", error);
+                alert("Nepodařilo se spojit se serverem.");
+            }
+        });
+    </script>
+</body>
+</html>

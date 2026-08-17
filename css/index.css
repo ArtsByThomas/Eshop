@@ -1,0 +1,405 @@
+        :root {
+            --bg-color: #fafafa;
+            --text-main: #111111;
+            --text-muted: #777777;
+            --card-bg: #ffffff;
+            --border-color: #eaeaea;
+            --accent: #111111;
+        }
+        * {
+            list-style-type: none;
+            margin: 0;
+            padding: 0;
+            text-decoration: none;
+            box-sizing: border-box;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+        }
+        body {
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh; 
+            background-color: var(--bg-color);
+            color: var(--text-main);
+        }
+
+        nav {
+            display: flex;
+            padding: 1.2rem 2rem;
+            align-items: center;
+            background-color: var(--card-bg);
+            border-bottom: 1px solid var(--border-color);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        
+        .brand-logo {
+            font-size: 1.5rem;
+            font-weight: 800;
+            letter-spacing: -0.5px;
+            color: var(--text-main);
+            margin-right: 2rem;
+        }
+
+        .search-container {
+            flex: 1;
+            max-width: 500px;
+            margin: 0 auto;
+        }
+        #search-input {
+            width: 100%;
+            border: none;
+            background-color: #f0f0f0;
+            padding: 12px 20px;
+            border-radius: 30px; 
+            font-size: 0.95rem;
+            transition: background 0.2s, box-shadow 0.2s;
+        }
+        #search-input:focus {
+            outline: none;
+            background-color: #fff;
+            box-shadow: 0 0 0 2px var(--accent);
+        }
+
+        nav ul {
+            display: flex;
+            gap: 1.5rem;
+            margin-left: 2rem;
+        }
+        nav ul > li {
+            position: relative;
+            display: flex;
+            align-items: center;
+            color: var(--text-main);
+        }
+        nav ul > li > svg {
+            cursor: pointer;
+            transition: opacity 0.2s;
+        }
+        nav ul > li > svg:hover {
+            opacity: 0.5;
+        }
+
+        /* --- BUBBLE / BADGE PRO KOŠÍK --- */
+        .cart-badge {
+            position: absolute;
+            top: -5px;
+            right: -8px;
+            background-color: #e53935;
+            color: white;
+            font-size: 0.7rem;
+            font-weight: bold;
+            height: 18px;
+            min-width: 18px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0 4px;
+            pointer-events: none; 
+            display: none; 
+        }
+
+        /* --- DROPDOWNY (PROFIL A KOŠÍK) --- */
+        .dropdown {
+            display: none;
+            position: absolute;
+            top: calc(100% + 15px); 
+            right: 0; 
+            background-color: var(--card-bg);
+            padding: 1rem;
+            flex-direction: column;
+            min-width: 120px;
+            box-shadow: 0px 10px 30px rgba(0,0,0,0.08); 
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            z-index: 50;
+        }
+        .dropdown a { color: var(--text-main); }
+        .dropdown li { padding: 8px 0; font-weight: 500; cursor: pointer; }
+        #user-profile-dropdown li:hover { color: var(--text-muted); }
+
+        #user-shop-dropdown { 
+            width: 380px; 
+            max-width: calc(100vw - 2rem);
+            padding: 0; 
+            overflow: hidden;
+        }
+        .cart-items-scroll { max-height: 350px; overflow-y: auto; overflow-x: hidden; padding: 1.5rem; }
+        .cart-items-scroll::-webkit-scrollbar { width: 6px; }
+        .cart-items-scroll::-webkit-scrollbar-thumb { background: #ccc; border-radius: 10px; }
+
+        @media (max-width: 600px) {
+            nav { padding: 0.8rem 1rem; }
+            .brand-logo { font-size: 1.2rem; margin-right: 0.8rem; }
+            nav ul { margin-left: 0.8rem; gap: 1rem; }
+            #user-shop-dropdown {
+                position: fixed;
+                top: 65px;
+                left: 1rem;
+                right: 1rem;
+                width: auto;
+                max-width: none;
+            }
+        }
+
+        /* --- HORIZONTÁLNÍ FILTRY --- */
+        .filters-wrapper {
+            max-width: 1400px;
+            margin: 0 auto;
+            width: 100%;
+            padding: 2rem 2rem 0 2rem;
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+        .filter-row {
+            display: flex;
+            gap: 0.8rem;
+            overflow-x: auto;
+            padding-bottom: 0.5rem; 
+        }
+        .filter-pill {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            padding: 8px 20px;
+            border-radius: 30px;
+            font-size: 0.9rem;
+            font-weight: 500;
+            color: var(--text-muted);
+            cursor: pointer;
+            white-space: nowrap;
+            transition: all 0.2s ease;
+        }
+        .filter-pill:hover { border-color: var(--text-main); color: var(--text-main); }
+        .filter-pill.active { background: var(--accent); border-color: var(--accent); color: white; }
+
+        /* --- VÝPIS PRODUKTŮ --- */
+        main#items {
+            max-width: 1400px;
+            margin: 0 auto;
+            width: 100%;
+            padding: 2rem;
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));    
+            gap: 2rem;
+            flex: 1;
+            align-content: start; 
+        }
+        .item {
+            background-color: var(--card-bg);
+            border-radius: 16px;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            border: 1px solid transparent;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        .item:hover { transform: translateY(-5px); box-shadow: 0 12px 40px rgba(0,0,0,0.06); }
+        
+        .item-clickable { cursor: pointer; } 
+        
+        .item img {
+            width: 100%;
+            height: 280px;
+            object-fit: cover;
+            background-color: #f9f9f9;
+        }
+        .item-info {
+            padding: 1.5rem;
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+            flex: 1;
+        }
+        .item-info h3 { font-size: 1.1rem; font-weight: 600; color: var(--text-main); }
+        .item-info .price { font-size: 1rem; color: var(--text-muted); margin-bottom: 1rem; }
+        
+        .add-to-cart-btn {
+            margin-top: auto;
+            width: 100%;
+            padding: 12px;
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 0.95rem;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .item:hover .add-to-cart-btn { background-color: var(--accent); color: white; }
+
+        /* --- MODAL (DETAIL PRODUKTU S GALERIÍ) --- */
+        .modal-overlay {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            z-index: 1000;
+            display: none; 
+            align-items: center;
+            justify-content: center;
+            padding: 1rem;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+        .modal-overlay.show { display: flex; opacity: 1; }
+        
+        .modal-content {
+            background: var(--card-bg);
+            width: 100%;
+            max-width: 1000px;
+            border-radius: 16px;
+            display: flex;
+            overflow: hidden;
+            position: relative;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.4);
+            max-height: 90vh;
+        }
+        
+        .modal-close {
+            position: absolute;
+            top: 15px; right: 20px;
+            font-size: 1.8rem;
+            cursor: pointer;
+            color: var(--text-muted);
+            transition: color 0.2s;
+            z-index: 20;
+            background: rgba(255,255,255,0.8);
+            border-radius: 50%;
+            width: 36px; height: 36px;
+            display: flex; align-items: center; justify-content: center;
+        }
+        .modal-close:hover { color: var(--text-main); background: #eee; }
+
+        .modal-gallery { 
+            flex: 1.2; 
+            background: #f4f4f4; 
+            position: relative; 
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .modal-gallery img { 
+            width: 100%; 
+            height: 100%; 
+            object-fit: cover; 
+            min-height: 400px; 
+            max-height: 90vh;
+        }
+
+        /* Tečky (indikátor fotek) - Kontrastní design s rámečkem */
+        .gallery-dots {
+            position: absolute;
+            bottom: 20px;
+            display: flex;
+            gap: 12px;
+        }
+        .gallery-dot {
+            width: 14px; 
+            height: 14px;
+            border-radius: 50%;
+            background-color: #ffffff;
+            border: 2px solid rgba(0, 0, 0, 0.3); 
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3); 
+            cursor: pointer;
+            transition: all 0.2s, transform 0.2s;
+        }
+        .gallery-dot:hover { 
+            border-color: rgba(0, 0, 0, 0.6); 
+        }
+        .gallery-dot.active { 
+            background-color: var(--accent);
+            transform: scale(1.25); 
+        }
+        
+        .modal-details {
+            flex: 1;
+            padding: 3rem 2.5rem;
+            display: flex;
+            flex-direction: column;
+            overflow-y: auto;
+        }
+        .modal-details h2 { font-size: 1.8rem; margin-bottom: 0.5rem; }
+        .modal-details .price { font-size: 1.3rem; color: var(--text-muted); font-weight: 500; margin-bottom: 1.5rem; }
+        .modal-details p { color: #555; line-height: 1.6; margin-bottom: 2rem; font-size: 0.95rem; }
+
+        .color-options { display: flex; gap: 10px; margin-bottom: 2rem; flex-wrap: wrap; }
+        .color-swatch {
+            width: 32px; height: 32px;
+            border-radius: 50%;
+            cursor: pointer;
+            border: 2px solid transparent;
+            box-shadow: 0 0 0 1px #ddd;
+            transition: transform 0.2s;
+        }
+        .color-swatch.selected { box-shadow: 0 0 0 2px var(--card-bg), 0 0 0 4px var(--accent); }
+        .color-swatch:hover { transform: scale(1.1); }
+
+        .modal-details .add-to-cart-btn {
+            background-color: var(--accent);
+            color: white;
+            padding: 15px;
+            font-size: 1.1rem;
+        }
+        .modal-details .add-to-cart-btn:hover { opacity: 0.8; }
+
+        @media (max-width: 768px) {
+            .modal-content { flex-direction: column; overflow-y: auto; }
+            .modal-gallery img { min-height: 350px; height: 350px; }
+            .modal-details { padding: 2rem 1.5rem; overflow-y: visible; }
+        }
+
+        footer { background-color: var(--card-bg); color: var(--text-muted); padding: 2rem; text-align: center; border-top: 1px solid var(--border-color); font-size: 0.9rem; }
+        /* --- AKTIVNÍ OBJEDNÁVKY DROPDOWN (Minimalismus) --- */
+.active-orders-scroll {
+    max-height: 350px;
+    overflow-y: auto;
+    padding-right: 8px; /* Odsazení od okraje pro scrollbar */
+}
+
+/* Úzký a jemný scrollbar */
+.active-orders-scroll::-webkit-scrollbar {
+    width: 4px; 
+}
+.active-orders-scroll::-webkit-scrollbar-track {
+    background: transparent;
+}
+.active-orders-scroll::-webkit-scrollbar-thumb {
+    background-color: #d0d0d0;
+    border-radius: 10px;
+}
+.active-orders-scroll::-webkit-scrollbar-thumb:hover {
+    background-color: #a0a0a0;
+}
+
+/* Karta objednávky */
+.order-card {
+    background-color: #fafafa;
+    border: 1px solid #eaeaea;
+    border-radius: 10px;
+    padding: 16px;
+    margin-bottom: 15px; /* Mezera mezi objednávkami */
+}
+.order-card:last-child {
+    margin-bottom: 0;
+}
+
+/* Modrý štítek doručení */
+.order-delivery-badge {
+    background-color: #e3f2fd;
+    color: #0d47a1;
+    padding: 6px 12px;
+    border-radius: 20px;
+    font-size: 13px;
+    font-weight: 600;
+    display: inline-block;
+    margin-bottom: 12px;
+}
+
+/* Oddělovač pro položky (čárkovaná čára nahoře) */
+.order-items {
+    margin-top: 12px;
+    border-top: 1px dashed #ddd;
+    padding-top: 12px;
+}

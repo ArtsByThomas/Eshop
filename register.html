@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Registrace</title>
+    <style>
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f9f9f9; display: flex; justify-content: center; align-items: center; min-height: 100vh; margin: 0; padding: 20px 0;}
+        .auth-card { background: white; padding: 40px; border-radius: 12px; box-shadow: 0 4px 20px rgba(0,0,0,0.05); width: 100%; max-width: 400px; }
+        .auth-card h1 { text-align: center; margin-top: 0; color: #111; }
+        .form-group { margin-bottom: 20px; }
+        .form-group label { display: block; margin-bottom: 8px; font-weight: 500; color: #333; }
+        .form-group input { width: 100%; padding: 12px; border: 1px solid #ccc; border-radius: 8px; box-sizing: border-box; font-size: 15px; }
+        .form-group input:focus { outline: none; border-color: #111; }
+        .btn { width: 100%; padding: 12px; background: #111; color: white; border: none; border-radius: 8px; font-size: 16px; font-weight: 600; cursor: pointer; transition: background 0.2s; }
+        .btn:hover { background: #333; }
+        .links { text-align: center; margin-top: 20px; font-size: 14px; color: #666; }
+        .links a { color: #111; text-decoration: none; font-weight: 600; }
+        .links a:hover { text-decoration: underline; }
+        .back-link { display: block; text-align: center; margin-bottom: 20px; text-decoration: none; color: #777; font-size: 14px; }
+    </style>
+</head>
+<body>
+
+    <div class="auth-card">
+        <a href="index.html" class="back-link">← Zpět na e-shop</a>
+        <h1>Nová registrace</h1>
+        <form id="register-form">
+            <div class="form-group">
+                <label for="name">Jméno a příjmení</label>
+                <input type="text" id="name" placeholder="Jan Novák" required>
+            </div>
+            <div class="form-group">
+                <label for="email">E-mail</label>
+                <input type="email" id="email" placeholder="vas@email.cz" required>
+            </div>
+            <div class="form-group">
+                <label for="password">Heslo</label>
+                <input type="password" id="password" placeholder="Min. 8 znaků" required minlength="8">
+            </div>
+            <button type="submit" class="btn">Vytvořit účet</button>
+        </form>
+        <div class="links">
+            Již máte účet? <a href="login.html">Přihlaste se</a>
+        </div>
+    </div>
+
+<script>
+        document.getElementById('register-form').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            // Získáme data z formuláře
+            const name = document.getElementById('name').value;
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+            
+            try {
+                // Pošleme data na náš MongoDB backend (auth.php)
+                const response = await fetch('auth.php?action=register', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ name, email, password })
+                });
+                
+                const result = await response.json();
+                
+                if (result.success) {
+                    // Úspěšná registrace
+                    alert(result.message);
+                    window.location.href = 'login.html'; // Přesměrování na login
+                } else {
+                    // Zobrazí chybu (např. "Tento e-mail již existuje")
+                    alert("Chyba: " + result.message);
+                }
+            } catch (error) {
+                console.error("Chyba při registraci:", error);
+                alert("Kritická chyba při komunikaci se serverem.");
+            }
+        });
+    </script>
+</body>
+</html>
