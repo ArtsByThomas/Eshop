@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<style>
+    *{
+        margin: 0;
+        padding: 0;
+    }
+    ul{list-style-type: none;}
+    body{
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100dvh;
+    }
+    .container{
+        display: flex;
+        flex-direction: column;
+        gap: 1rem;
+    }
+    input{
+                padding: .5rem;
+
+    }
+    button{
+        background-color: black;
+        color: white;
+        width: 100%;
+
+        outline: none;
+        border-radius: 1rem;
+        border: none;
+        padding: .5rem;
+}
+
+</style>
+<body>
+    <ul class="container">
+        <li>
+            <input type="text">
+        </li>
+         <li>
+            <input type="text">
+        </li>
+         <li>
+            <button>Příhlásit se</button>
+        </li>
+      
+    </ul>
+    <script>
+        document.getElementById('loginForm').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const username = document.getElementById('username').value;
+    const password = document.getElementById('password').value;
+
+    const response = await fetch('login.php', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ username, password })
+    });
+    const result = await response.json();
+    document.getElementById('message').innerText = result.message;
+});
+    </script>
+</body>
+</html>
