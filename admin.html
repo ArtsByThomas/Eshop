@@ -1,0 +1,385 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Administrace | ESHOP.</title>
+    <style>
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f9f9f9; margin: 0; color: #333; display: none; }
+
+        /* --- NAVIGACE --- */
+        nav { display: flex; justify-content: space-between; align-items: center; background: white; padding: 15px 40px; box-shadow: 0 2px 10px rgba(0,0,0,0.05); position: sticky; top: 0; z-index: 100; }
+        .brand-logo { font-size: 24px; font-weight: 800; color: #111; letter-spacing: -0.5px; }
+        .brand-logo span { color: #d32f2f; font-size: 14px; margin-left: 5px; vertical-align: middle; }
+        .nav-links { display: flex; align-items: center; gap: 20px; }
+        .nav-links a { text-decoration: none; color: #111; font-weight: 500; display: flex; align-items: center; gap: 8px; transition: color 0.2s; }
+        .nav-links a:hover { color: #d32f2f; }
+
+        /* --- LAYOUT --- */
+        .admin-container { max-width: 1200px; margin: 40px auto; padding: 0 20px; }
+        .tabs { display: flex; gap: 10px; margin-bottom: 20px; border-bottom: 2px solid #eee; padding-bottom: 10px; }
+        .tab-btn { background: none; border: none; font-size: 16px; font-weight: 600; color: #777; cursor: pointer; padding: 10px 20px; border-radius: 8px; transition: all 0.2s; }
+        .tab-btn:hover { background: #eee; color: #111; }
+        .tab-btn.active { background: #111; color: white; }
+        .tab-content { display: none; }
+        .tab-content.active { display: block; }
+        
+        .card { background: white; border-radius: 12px; box-shadow: 0 4px 20px rgba(0,0,0,0.05); padding: 25px; overflow-x: auto; }
+        .header-action { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+        .header-action h2 { margin: 0; color: #111; display: flex; align-items: center; gap: 10px; }
+        
+        /* Tlačítko pro přidání produktu */
+        .btn { padding: 10px 16px; background: #111; color: white; border: none; border-radius: 8px; font-size: 14px; font-weight: 600; cursor: pointer; transition: background 0.2s; display: inline-flex; align-items: center; gap: 6px; }
+        .btn:hover { background: #333; }
+
+        /* --- TABULKY --- */
+        table { width: 100%; border-collapse: collapse; text-align: left; min-width: 800px; }
+        th { background: #f4f4f4; padding: 12px 15px; font-weight: 600; color: #111; border-bottom: 2px solid #ddd; }
+        td { padding: 15px; border-bottom: 1px solid #eee; vertical-align: middle; }
+        tr:hover { background: #fcfcfc; }
+        .status-select { padding: 8px; border-radius: 6px; border: 1px solid #ccc; font-family: inherit; }
+        .action-icon { cursor: pointer; color: #d32f2f; transition: opacity 0.2s; }
+        .action-icon:hover { opacity: 0.7; }
+
+        /* --- INLINE EDITACE --- */
+        .img-edit-container { display: flex; align-items: center; }
+        .product-img-mini { width: 45px; height: 45px; object-fit: cover; border-radius: 6px; margin-right: 10px; border: 1px solid #eee; cursor: pointer; transition: transform 0.2s, box-shadow 0.2s; }
+        .product-img-mini:hover { transform: scale(1.1); box-shadow: 0 4px 10px rgba(0,0,0,0.1); border-color: #111; }
+
+        [contenteditable="true"] { padding: 4px 8px; border: 1px dashed transparent; border-radius: 4px; transition: border-color 0.2s, background-color 0.2s; }
+        [contenteditable="true"]:hover { border-color: #ccc; background-color: #fcfcfc; cursor: pointer; }
+        [contenteditable="true"]:focus { outline: none; border-color: #111; background-color: #fff; box-shadow: 0 0 0 2px rgba(0,0,0,0.05); }
+
+        .img-url-input { font-size: 11px; color: #777; max-width: 150px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; display: inline-block; }
+        .img-url-input:focus { white-space: normal; word-break: break-all; background: #fff; position: relative; z-index: 10; max-width: 300px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); padding: 5px; border-radius: 4px; }
+
+        /* --- VIZUÁLNÍ GALERIE (MODÁL) --- */
+        .variant-card { border: 1px solid #eee; padding: 15px; border-radius: 8px; margin-bottom: 15px; background: #fafafa; }
+        .variant-header { display: flex; gap: 10px; align-items: center; margin-bottom: 15px; flex-wrap: wrap;}
+        .img-grid { display: flex; gap: 10px; flex-wrap: wrap; }
+        .img-thumbnail-wrapper { position: relative; display: inline-block; }
+        .img-thumbnail { width: 80px; height: 80px; object-fit: cover; border-radius: 6px; cursor: pointer; border: 2px solid transparent; transition: border-color 0.2s; background: #eaeaea; }
+        .img-thumbnail:hover { border-color: #111; }
+        .remove-img-btn { position: absolute; top: -5px; right: -5px; background: #d32f2f; color: white; border-radius: 50%; width: 22px; height: 22px; text-align: center; cursor: pointer; font-size: 14px; line-height: 20px; font-weight: bold; border: 2px solid white; }
+        .add-img-btn { width: 80px; height: 80px; border: 2px dashed #ccc; border-radius: 6px; display: flex; justify-content: center; align-items: center; cursor: pointer; color: #777; font-size: 24px; background: white; transition: background 0.2s, border-color 0.2s; }
+        .add-img-btn:hover { border-color: #111; background: #f9f9f9; color: #111; }
+    </style>
+</head>
+<body>
+
+    <nav>
+        <div class="brand-logo">ESHOP. <span>ADMINISTRACE</span></div>
+        <div class="nav-links">
+            <a href="index.html">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>
+                Zpět na e-shop
+            </a>
+            <a href="#" onclick="logoutAdmin()" style="color: #d32f2f;">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><polyline points="16 17 21 12 16 7"></polyline><line x1="21" y1="12" x2="9" y2="12"></line></svg>
+                Odhlásit se
+            </a>
+        </div>
+    </nav>
+
+    <div class="admin-container">
+        <div class="tabs">
+            <button class="tab-btn active" onclick="switchTab('orders')">Objednávky</button>
+            <button class="tab-btn" onclick="switchTab('products')">Produkty</button>
+        </div>
+
+        <div id="orders" class="tab-content active">
+            <div class="card">
+                <div class="header-action">
+                    <h2>Správa objednávek</h2>
+                </div>
+                <table>
+                    <thead><tr><th>ID</th><th>Zákazník</th><th>Město / Ulice</th><th>Cena celkem</th><th>Stav</th></tr></thead>
+                    <tbody id="orders-table-body"><tr><td colspan="5" style="text-align: center;">Načítám objednávky...</td></tr></tbody>
+                </table>
+            </div>
+        </div>
+
+        <div id="products" class="tab-content">
+            <div class="card">
+                <div class="header-action">
+                    <h2>
+                        Přehled produktů 
+                        <small style="color:#777; font-size:13px; font-weight:normal;">(Kliknutím na fotku otevřete galerii)</small>
+                    </h2>
+                    <button class="btn" onclick="createNewProduct()">+ Nový produkt</button>
+                </div>
+                <table>
+                    <thead><tr><th>Obrázek & URL</th><th>Název</th><th>Kategorie</th><th>Zákl. cena</th><th>Akce</th></tr></thead>
+                    <tbody id="products-table-body"><tr><td colspan="5" style="text-align: center;">Načítám produkty...</td></tr></tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODÁLNÍ OKNO PRO VIZUÁLNÍ GALERII BAREV -->
+    <div id="gallery-modal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 1000; justify-content: center; align-items: center;">
+        <div style="background: white; padding: 25px; border-radius: 12px; width: 90%; max-width: 800px; max-height: 90vh; overflow-y: auto; box-shadow: 0 10px 30px rgba(0,0,0,0.2);">
+            <h3 style="margin-top: 0; margin-bottom: 5px;">Správa galerie a barev</h3>
+            <p style="font-size: 13px; color: #666; margin-bottom: 20px;">Kliknutím na obrázek změníte jeho URL. Tlačítkem <strong>+</strong> přidáte další fotku. Můžete definovat i jinou cenu pro tuto barvu.</p>
+            
+            <div id="variants-container"></div>
+            
+            <button onclick="addVariant()" style="margin-top: 15px; padding: 12px; border: 2px dashed #111; background: transparent; border-radius: 6px; cursor: pointer; font-weight: bold; width: 100%; transition: background 0.2s;">+ Přidat další barvu</button>
+            
+            <div style="margin-top: 25px; display: flex; justify-content: flex-end; gap: 10px;">
+                <button onclick="closeGalleryModal()" style="padding: 10px 15px; border: none; background: #eee; border-radius: 6px; cursor: pointer;">Zrušit</button>
+                <button onclick="saveGalleryData()" style="padding: 10px 15px; border: none; background: #111; color: white; border-radius: 6px; cursor: pointer; font-weight: bold;">Uložit změny v galerii</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let allProducts = []; 
+        let currentEditingProductId = null;
+        let currentEditingColors = [];
+
+        // ==========================================
+        // 0. AUTORIZACE A ZÁKLAD
+        // ==========================================
+        async function checkAuth() {
+            try {
+                const res = await fetch('admin-auth.php?action=check');
+                const data = await res.json();
+                if (!data.logged_in) window.location.href = 'admin-login.html';
+                else { document.body.style.display = 'block'; loadOrders(); loadProducts(); }
+            } catch (err) { window.location.href = 'admin-login.html'; }
+        }
+
+        async function logoutAdmin() {
+            await fetch('admin-auth.php?action=logout');
+            window.location.href = 'admin-login.html';
+        }
+        document.addEventListener('DOMContentLoaded', checkAuth);
+
+        function switchTab(tabId) {
+            document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+            document.getElementById(tabId).classList.add('active');
+            event.currentTarget.classList.add('active');
+        }
+
+        // ==========================================
+        // 1. OBJEDNÁVKY 
+        // ==========================================
+        async function loadOrders() {
+            const res = await fetch('admin-api.php?action=orders');
+            const orders = await res.json();
+            const body = document.getElementById('orders-table-body');
+            body.innerHTML = '';
+            if (orders.length === 0) { body.innerHTML = '<tr><td colspan="5" style="text-align:center;">Žádné objednávky.</td></tr>'; return; }
+
+            orders.forEach(o => {
+                const oid = o._id.$oid || o._id;
+                body.innerHTML += `<tr>
+                    <td><strong>#${oid.substring(oid.length - 6)}</strong></td>
+                    <td><strong>${o.name || ''}</strong><br><small style="color:#777;">${o.email || ''}</small></td>
+                    <td>${o.city || ''}, ${o.street || ''}</td>
+                    <td><strong>${o.total || '0 Kč'}</strong></td>
+                    <td>
+                        <select class="status-select" onchange="updateOrderStatus('${oid}', this.value)">
+                            <option value="Nová" ${o.status === 'Nová' ? 'selected' : ''}>Nová</option>
+                            <option value="Zpracovává se" ${o.status === 'Zpracovává se' ? 'selected' : ''}>Zpracovává se</option>
+                            <option value="Odesláno" ${o.status === 'Odesláno' ? 'selected' : ''}>Odesláno</option>
+                        </select>
+                    </td>
+                </tr>`;
+            });
+        }
+        async function updateOrderStatus(id, status) { await fetch('admin-api.php?action=orders', { method: 'POST', headers: {'Content-Type':'application/json'}, body: JSON.stringify({id, status}) }); }
+
+        // ==========================================
+        // 2. PRODUKTY (Načítání a vytvoření)
+        // ==========================================
+        async function loadProducts() {
+            const res = await fetch('admin-api.php?action=products');
+            allProducts = await res.json();
+            const body = document.getElementById('products-table-body');
+            body.innerHTML = '';
+
+            allProducts.forEach(product => {
+                const pid = product._id.$oid || product._id;
+                body.innerHTML += `
+                    <tr id="product-row-${pid}">
+                        <td>
+                            <div class="img-edit-container">
+                                <img src="${product.image}" class="product-img-mini" onclick="openGalleryModal('${pid}')" id="img-preview-${pid}" title="Kliknutím upravíte fotky a barvy">
+                                <div contenteditable="true" class="img-url-input" onblur="updateProductField('${pid}', 'image', this.innerText)" onkeydown="preventEnter(event)">${product.image || ''}</div>
+                            </div>
+                        </td>
+                        <td><div contenteditable="true" style="font-weight:600;" onblur="updateProductField('${pid}', 'name', this.innerText)" onkeydown="preventEnter(event)">${product.name || ''}</div></td>
+                        <td><div contenteditable="true" style="color:#666; font-size:13px;" onblur="updateProductField('${pid}', 'category', this.innerText)" onkeydown="preventEnter(event)">${product.category || ''}</div></td>
+                        <td><div contenteditable="true" style="font-weight:600;" onblur="updateProductField('${pid}', 'price', this.innerText)" onkeydown="preventEnter(event)">${product.price || ''}</div></td>
+                        <td style="white-space: nowrap;">
+                            <svg class="action-icon" onclick="deleteProduct('${pid}')" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
+                        </td>
+                    </tr>
+                `;
+            });
+        }
+
+        // Tvorba nového produktu
+        async function createNewProduct() {
+            try {
+                const res = await fetch('admin-api.php?action=products', { method: 'PUT' });
+                const data = await res.json();
+                if(data.success) {
+                    loadProducts();
+                }
+            } catch (err) {
+                console.error("Chyba při vytváření:", err);
+            }
+        }
+
+        async function updateProductField(id, field, value) {
+            value = value.trim();
+            if (field === 'image' && document.getElementById(`img-preview-${id}`)) document.getElementById(`img-preview-${id}`).src = value;
+            await fetch('admin-api.php?action=products', { method: 'POST', headers: {'Content-Type':'application/json'}, body: JSON.stringify({id, field, value}) });
+        }
+
+        function preventEnter(e) { if(e.key === 'Enter') { e.preventDefault(); e.target.blur(); } }
+
+        async function deleteProduct(id) {
+            if(!confirm("Opravdu produkt smazat?")) return;
+            const res = await fetch(`admin-api.php?action=products&id=${id}`, { method: 'DELETE' });
+            if ((await res.json()).success) document.getElementById(`product-row-${id}`).remove();
+        }
+
+        // ==========================================
+        // 3. VIZUÁLNÍ SPRÁVCE GALERIE A BAREV
+        // ==========================================
+        function openGalleryModal(productId) {
+            const product = allProducts.find(p => (p._id.$oid || p._id) === productId);
+            if (!product) return;
+
+            currentEditingProductId = productId;
+            currentEditingColors = JSON.parse(JSON.stringify(product.colors || []));
+
+            // Defaultní naplnění
+            if (currentEditingColors.length === 0) {
+                currentEditingColors.push({
+                    name: "Základní barva",
+                    hex: "#111111",
+                    price: "",
+                    images: [product.image || ""]
+                });
+            }
+
+            renderGalleryModal();
+            document.getElementById('gallery-modal').style.display = 'flex';
+        }
+
+        function closeGalleryModal() {
+            document.getElementById('gallery-modal').style.display = 'none';
+        }
+
+        function renderGalleryModal() {
+            const container = document.getElementById('variants-container');
+            container.innerHTML = '';
+
+            currentEditingColors.forEach((variant, vIndex) => {
+                let imagesHtml = '';
+                
+                variant.images.forEach((imgUrl, iIndex) => {
+                    imagesHtml += `
+                        <div class="img-thumbnail-wrapper">
+                            <img src="${imgUrl}" class="img-thumbnail" onclick="editImageUrl(${vIndex}, ${iIndex})" title="Kliknutím změníte obrázek" alt="Chybí URL">
+                            <span class="remove-img-btn" onclick="removeImage(${vIndex}, ${iIndex})" title="Smazat obrázek">&times;</span>
+                        </div>
+                    `;
+                });
+
+                container.innerHTML += `
+                    <div class="variant-card">
+                        <div class="variant-header">
+                            <input type="color" value="${variant.hex}" onchange="updateVariantHex(${vIndex}, this.value)" style="width:40px; height:40px; border:none; padding:0; cursor:pointer;" title="Vyberte barvu">
+                            <input type="text" value="${variant.name}" onchange="updateVariantName(${vIndex}, this.value)" placeholder="Název (např. Bílá)" style="padding:10px; border:1px solid #ccc; border-radius:6px; font-weight:bold; font-size:14px; width: 150px;">
+                            <input type="text" value="${variant.price || ''}" onchange="updateVariantPrice(${vIndex}, this.value)" placeholder="Vlastní cena (volitelně)" title="Můžete zadat např. +100 Kč nebo 599 Kč" style="padding:10px; border:1px solid #ccc; border-radius:6px; font-weight:bold; font-size:14px; width: 180px;">
+                            <button onclick="removeVariant(${vIndex})" style="margin-left:auto; background:#ffebee; color:#d32f2f; border:none; padding:8px 12px; border-radius:6px; cursor:pointer; font-weight:bold;">Smazat</button>
+                        </div>
+                        <div class="img-grid">
+                            ${imagesHtml}
+                            <div class="add-img-btn" onclick="addImage(${vIndex})" title="Přidat další obrázek k této barvě">+</div>
+                        </div>
+                    </div>
+                `;
+            });
+        }
+
+        function editImageUrl(vIndex, iIndex) {
+            const currentUrl = currentEditingColors[vIndex].images[iIndex];
+            const newUrl = prompt("Zadejte novou URL adresu obrázku:", currentUrl);
+            if (newUrl !== null && newUrl.trim() !== "") {
+                currentEditingColors[vIndex].images[iIndex] = newUrl.trim();
+                renderGalleryModal();
+            }
+        }
+
+        function removeImage(vIndex, iIndex) {
+            currentEditingColors[vIndex].images.splice(iIndex, 1);
+            renderGalleryModal();
+        }
+
+        function addImage(vIndex) {
+            const newUrl = prompt("Vložte URL adresu nového obrázku:", "");
+            if (newUrl !== null && newUrl.trim() !== "") {
+                currentEditingColors[vIndex].images.push(newUrl.trim());
+                renderGalleryModal();
+            }
+        }
+
+        function updateVariantName(vIndex, val) { currentEditingColors[vIndex].name = val; }
+        function updateVariantHex(vIndex, val) { currentEditingColors[vIndex].hex = val; }
+        function updateVariantPrice(vIndex, val) { currentEditingColors[vIndex].price = val; }  
+
+        function addVariant() {
+            currentEditingColors.push({ name: "Nová barva", hex: "#cccccc", price: "", images: [] });
+            renderGalleryModal();
+        }
+
+        function removeVariant(vIndex) {
+            if(confirm("Opravdu chcete smazat celou tuto barvu a všechny její obrázky?")) {
+                currentEditingColors.splice(vIndex, 1);
+                renderGalleryModal();
+            }
+        }
+
+        async function saveGalleryData() {
+            try {
+                await fetch('admin-api.php?action=products', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        id: currentEditingProductId,
+                        field: 'colors',
+                        value: currentEditingColors
+                    })
+                });
+
+                if (currentEditingColors.length > 0 && currentEditingColors[0].images.length > 0) {
+                    const mainImageToSync = currentEditingColors[0].images[0];
+                    await fetch('admin-api.php?action=products', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                            id: currentEditingProductId,
+                            field: 'image',
+                            value: mainImageToSync
+                        })
+                    });
+                }
+
+                closeGalleryModal();
+                loadProducts(); 
+                
+            } catch (e) {
+                alert("Chyba při komunikaci s databází.");
+            }
+        }
+    </script>
+</body>
+</html>

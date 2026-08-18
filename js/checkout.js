@@ -29,17 +29,14 @@ if (cart.length === 0) {
 }
 
 document.addEventListener('DOMContentLoaded', async () => {
-    // 1. Zjistíme ID přihlášeného uživatele z localStorage
+    // --- 1. LOGIKA PRO PŘIHLÁŠENÉHO UŽIVATELE ---
     const userId = localStorage.getItem('userId');
 
-    // 2. Pokud je uživatel přihlášen (a není to host), stáhneme jeho data
     if (userId && userId !== 'guest') {
         try {
-            // ZMĚNA: Přidán parametr user_id do URL, aby databáze věděla, koho hledat
             const response = await fetch(`profile.php?user_id=${userId}`);
             const data = await response.json();
 
-            // 3. Předvyplnění formuláře
             if (!data.error) {
                 document.getElementById('name').value = data.name || '';
                 document.getElementById('street').value = data.street || '';
@@ -52,8 +49,73 @@ document.addEventListener('DOMContentLoaded', async () => {
             console.error("Chyba při načítání dat:", error);
         }
     }
+
+    // --- 2. NOVÁ LOGIKA PRO TLAČÍTKA DOPRAVY (DLAŽDICE) ---
+    const deliveryRadios = document.querySelectorAll('input[name="delivery_method"]');
+    const pickupContainer = document.getElementById('pickup-container');
+    const pickupPointId = document.getElementById('pickup-point-id');
+    const btnOpenWidget = document.getElementById('open-widget-btn');
+    const selectedBranchText = document.getElementById('selected-branch');
+
+    const pickupMethods = ['zbox', 'balikovna', 'alzabox', 'pplbox'];
+
+    function handleDeliveryChange() {
+        const selectedRadio = document.querySelector('input[name="delivery_method"]:checked');
+        if (!selectedRadio) return;
+        
+        const selectedMethod = selectedRadio.value;
+
+        if (pickupMethods.includes(selectedMethod)) {
+            if (pickupContainer) pickupContainer.style.display = 'block';
+            if (pickupPointId) pickupPointId.setAttribute('required', 'required'); 
+            
+            if (btnOpenWidget) {
+                if (selectedMethod === 'zbox') btnOpenWidget.innerText = "Vybrat Z-BOX / Pobočku na mapě";
+                if (selectedMethod === 'balikovna') btnOpenWidget.innerText = "Vybrat Balíkovnu na mapě";
+                if (selectedMethod === 'alzabox') btnOpenWidget.innerText = "Vybrat AlzaBox na mapě";
+                if (selectedMethod === 'pplbox') btnOpenWidget.innerText = "Vybrat PPL Parcelbox na mapě";
+            }
+            
+        } else {
+            if (pickupContainer) pickupContainer.style.display = 'none';
+            if (pickupPointId) {
+                pickupPointId.removeAttribute('required');
+                pickupPointId.value = ""; 
+            }
+            if (selectedBranchText) selectedBranchText.innerText = "Zatím nevybráno";
+        }
+    }
+
+    deliveryRadios.forEach(radio => {
+        radio.addEventListener('change', handleDeliveryChange);
+    });
+
+    // Otevření Widgetu Zásilkovny
+    if (btnOpenWidget) {
+        btnOpenWidget.addEventListener('click', () => {
+            const packetaApiKey = "VÁŠ_API_KLÍČ_ZE_ZÁSILKOVNY";
+            
+            const packetaOptions = {
+                country: "cz",
+                language: "cs",
+                valueFormat: "ID"
+            };
+
+            Packeta.Widget.pick(packetaApiKey, function(pickupPoint) {
+                if (pickupPoint != null) {
+                    selectedBranchText.innerText = "Vybráno: " + pickupPoint.name + " (" + pickupPoint.id + ")";
+                    pickupPointId.value = pickupPoint.id;
+                } else {
+                    if (!pickupPointId.value) {
+                        selectedBranchText.innerText = "Nevybrali jste žádnou pobočku.";
+                    }
+                }
+            }, packetaOptions);
+        });
+    }
 });
 
+// --- 3. ODESLÁNÍ OBJEDNÁVKY ---
 document.getElementById('checkout-form').addEventListener('submit', async (e) => {
     e.preventDefault();
     
@@ -62,11 +124,20 @@ document.getElementById('checkout-form').addEventListener('submit', async (e) =>
         return;
     }
 
-    const statusMessage = document.getElementById('status-message');
-    statusMessage.style.color = "#777";
-    statusMessage.textContent = "Zpracovávám...";
+    // Kontrola, zda je vybrán způsob dopravy
+    const deliveryMethodInput = document.querySelector('input[name="delivery_method"]:checked');
+    if (!deliveryMethodInput) {
+        alert("Prosím, vyberte způsob doručení.");
+        return;
+    }
 
-    // ZMĚNA: user_id se nyní načítá z localStorage (fallback 'guest' místo '1')
+    const statusMessage = document.getElementById('status-message');
+    if (statusMessage) {
+        statusMessage.style.color = "#777";
+        statusMessage.textContent = "Zpracovávám...";
+    }
+
+    // Vytvoření odesílaného objektu
     const formData = {
         user_id: localStorage.getItem('userId') || 'guest',
         name: document.getElementById('name').value,
@@ -75,6 +146,11 @@ document.getElementById('checkout-form').addEventListener('submit', async (e) =>
         zip: document.getElementById('zip').value,
         phone: document.getElementById('phone').value,
         email: document.getElementById('email').value,
+        
+        delivery_method: deliveryMethodInput.value,           
+        
+        pickup_point_id: document.getElementById('pickup-point-id') ? document.getElementById('pickup-point-id').value : "", 
+        
         cart_items: cart, 
         total: total      
     };
@@ -89,20 +165,26 @@ document.getElementById('checkout-form').addEventListener('submit', async (e) =>
         const result = await response.json();
 
         if (result.success) {
-            statusMessage.style.color = "#2e7d32";
-            statusMessage.textContent = "Objednávka byla úspěšně odeslána!";
+            if (statusMessage) {
+                statusMessage.style.color = "#2e7d32";
+                statusMessage.textContent = "Objednávka byla úspěšně odeslána!";
+            }
             
             localStorage.removeItem('cart');
             setTimeout(() => {
                 window.location.href = "index.html";
             }, 2000);
         } else {
-            statusMessage.style.color = "#d32f2f";
-            statusMessage.textContent = result.message || "Nastala chyba při ukládání.";
+            if (statusMessage) {
+                statusMessage.style.color = "#d32f2f";
+                statusMessage.textContent = result.message || "Nastala chyba při ukládání.";
+            }
         }
     } catch (error) {
         console.error("Chyba při odesílání:", error);
-        statusMessage.style.color = "#d32f2f";
-        statusMessage.textContent = "Kritická chyba při komunikaci se serverem.";
+        if (statusMessage) {
+            statusMessage.style.color = "#d32f2f";
+            statusMessage.textContent = "Kritická chyba při komunikaci se serverem.";
+        }
     }
 });

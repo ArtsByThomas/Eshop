@@ -37,9 +37,8 @@ document.addEventListener('DOMContentLoaded', async () => {
             } else {
                 let html = '';
                 orders.reverse().forEach((order, index) => {
-                    const uniqueId = order.id || index; // Unikátní ID pro toggle funkce
+                    const uniqueId = order.id || index; 
                     
-                    // Zpracování produktů (předpokládá, že PHP vrací pole order.products)
                     let productsHtml = '';
                     if (order.products && Array.isArray(order.products) && order.products.length > 0) {
                         productsHtml = order.products.map(p => 
@@ -81,7 +80,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
 });
 
-// Odeslání formuláře (zahrnuje profil i heslo v jednom kroku)
+// Odeslání formuláře 
 document.getElementById('checkoutForm').addEventListener('submit', async (e) => {
     e.preventDefault(); 
     
@@ -119,7 +118,6 @@ document.getElementById('checkoutForm').addEventListener('submit', async (e) => 
         const oldPassword = document.getElementById('old-password').value;
         const newPassword = document.getElementById('new-password').value;
 
-        // Pokud je sekce zobrazená a uživatel něco vepsal do hesel
         const isSectionVisible = document.getElementById('password-section').style.display === 'block';
 
         if (isSectionVisible && (oldPassword || newPassword)) {
@@ -157,7 +155,7 @@ document.getElementById('checkoutForm').addEventListener('submit', async (e) => 
                 alert("Údaje uloženy, ale heslo se nepodařilo změnit: " + passResult.message);
             }
         } else {
-            // Heslo nebylo vyplněno/změněno, zobrazíme úspěch jen pro data
+            // Heslo nebylo vyplněno/změněno
             alert(profileResult.message);
         }
 
@@ -211,12 +209,10 @@ function toggleVisibility(inputId, iconElement) {
     const input = document.getElementById(inputId);
     
     if (input.type === 'password') {
-        input.type = 'text'; // Odkryje heslo
-        // Změní ikonu na NORMÁLNÍ OKO
+        input.type = 'text';  
         iconElement.innerHTML = `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#666" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>`;
     } else {
-        input.type = 'password'; // Skryje heslo
-        // Změní ikonu na PŘEŠKRTNUTÉ OKO
+        input.type = 'password'; 
         iconElement.innerHTML = `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#666" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path><line x1="1" y1="1" x2="23" y2="23"></line></svg>`;
     }
 }

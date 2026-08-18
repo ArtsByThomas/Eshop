@@ -38,7 +38,6 @@
             const email = document.getElementById('reset-email').value;
             
             try {
-                // Odeslání požadavku do auth.php (akce reset_request)
                 const response = await fetch('auth.php?action=reset_request', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
@@ -46,7 +45,6 @@
                 });
                 const result = await response.json();
                 
-                // Zobrazí hlášku ze serveru
                 alert(result.message); 
                 
             } catch (error) {

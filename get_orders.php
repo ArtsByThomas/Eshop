@@ -27,7 +27,7 @@ try {
             'street' => $doc['street'] ?? '',
             'city' => $doc['city'] ?? '',
             'zip' => $doc['zip'] ?? '',
-            'cart_items' => $doc['cart_items'] ?? [] // <--- NOVÉ: Načítá položky košíku
+            'cart_items' => $doc['cart_items'] ?? []
         ];
     }
 

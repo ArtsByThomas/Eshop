@@ -4,10 +4,100 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Pokladna</title>
-        <link rel="stylesheet" href="css/checkout.css">
- <script src="js/checkout.js" defer>
-      
-    </script>
+    <link rel="stylesheet" href="css/checkout.css">
+    
+    <!-- Skript pro Zásilkovna Widget -->
+    <script src="https://widget.packeta.com/v6/www/js/library.js"></script>
+    <script src="js/checkout.js" defer></script>
+    
+    <style>
+        /* --- STYLY PRO NADPISY A ODDĚLOVAČE --- */
+        .section-title { font-size: 1.25rem; font-weight: bold; color: #111; margin-bottom: 0.5rem; }
+        .section-divider { border: 0; border-top: 1px solid #eaeaea; margin-top: 0; margin-bottom: 1.5rem; }
+        .group-title { font-size: 1rem; color: #555; margin-bottom: 0.75rem; font-weight: 600; }
+
+        /* --- STYLY PRO TLAČÍTKA DOPRAVY (DLAŽDICE) --- */
+        .delivery-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr; 
+            gap: 10px;
+            margin-bottom: 1.5rem;
+        }
+
+        .delivery-card {
+            display: block;
+            cursor: pointer;
+            position: relative;
+        }
+
+        /* Skrytí klasického radio buttonu */
+        .delivery-card input[type="radio"] {
+            position: absolute;
+            opacity: 0;
+            cursor: pointer;
+            height: 0;
+            width: 0;
+        }
+
+        /* Vzhled samotného tlačítka */
+        .card-content {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 15px 10px;
+            border: 2px solid #eaeaea;
+            border-radius: 8px;
+            background-color: #fff;
+            color: #555;
+            font-weight: 500;
+            font-size: 0.9rem;
+            text-align: center;
+            transition: all 0.2s ease;
+            height: 100%;
+            box-sizing: border-box;
+        }
+
+        /* Efekt při najetí myší */
+        .delivery-card:hover .card-content {
+            border-color: #ccc;
+            background-color: #fafafa;
+        }
+
+        /* Vzhled VYBRANÉHO tlačítka */
+        .delivery-card input[type="radio"]:checked + .card-content {
+            border-color: #111; 
+            background-color: #f9f9f9;
+            color: #111;
+            font-weight: bold;
+            box-shadow: 0 0 0 1px #111;
+        }
+
+        .pickup-container { 
+            padding: 1.5rem; 
+            background-color: #f9f9f9; 
+            border-radius: 8px; 
+            margin-bottom: 2rem; 
+            border: 1px solid #ddd;
+            text-align: center;
+        }
+        
+        .btn-widget { 
+            padding: 12px 24px; 
+            background-color: #111;
+            color: white; 
+            border: none; 
+            border-radius: 6px; 
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 1rem;
+            transition: background-color 0.2s;
+        }
+        .btn-widget:hover { background-color: #333; }
+        
+        #selected-branch { margin-top: 1rem; font-weight: 600; color: #333; font-size: 0.95rem; }
+        
+        .form-group label { color: #777; font-size: 0.9rem; margin-bottom: 0.3rem; display: block; }
+    </style>
 </head>
 <body>
 
@@ -15,22 +105,77 @@
 
     <div class="checkout-wrapper">
         
+        <!-- LEVÝ SLOUPEC: Váš nákup -->
         <div class="box">
             <h2>Váš nákup</h2>
-            <div id="cart-items-container">
-            </div>
-            
+            <div id="cart-items-container"></div>
             <div class="bottom-action">
-                <div class="cart-total" id="cart-total">
-                    Celkem: 0 Kč
-                </div>
-                <div class="status-spacer"></div> 
+                <div class="cart-total" id="cart-total">Celkem: 0 Kč</div>
             </div>
         </div>
 
+        <!-- PRAVÝ SLOUPEC: Doprava a Údaje -->
         <div class="box">
-            <h2>Dodací údaje</h2>
             <form id="checkout-form">
+                
+                <h2 class="section-title">Způsob doručení</h2>
+                <hr class="section-divider">
+                
+                <!-- 1. SKUPINA: VÝDEJNÍ MÍSTA -->
+                <div class="group-title">Výdejní místa a boxy</div>
+                <div class="delivery-grid">
+                    <label class="delivery-card">
+                        <input type="radio" name="delivery_method" value="zbox" required>
+                        <span class="card-content">Z-BOX / Zásilkovna</span>
+                    </label>
+                    <label class="delivery-card">
+                        <input type="radio" name="delivery_method" value="balikovna">
+                        <span class="card-content">Balíkovna</span>
+                    </label>
+                    <label class="delivery-card">
+                        <input type="radio" name="delivery_method" value="alzabox">
+                        <span class="card-content">AlzaBox</span>
+                    </label>
+                    <label class="delivery-card">
+                        <input type="radio" name="delivery_method" value="pplbox">
+                        <span class="card-content">PPL Parcelbox</span>
+                    </label>
+                </div>
+
+                <!-- Kontejner pro widget (zobrazí se jen při výběru výdejního místa) -->
+                <div id="pickup-container" class="pickup-container" style="display: none;">
+                    <button type="button" id="open-widget-btn" class="btn-widget">Vybrat pobočku na mapě</button>
+                    <div id="selected-branch">Zatím nevybráno</div>
+                    <input type="hidden" id="pickup-point-id" name="pickup_point_id">
+                </div>
+
+                <!-- 2. SKUPINA: DORUČENÍ NA ADRESU -->
+                <div class="group-title">Doručení na adresu (Kurýr)</div>
+                <div class="delivery-grid">
+                    <label class="delivery-card">
+                        <input type="radio" name="delivery_method" value="dpd_address">
+                        <span class="card-content">DPD</span>
+                    </label>
+                    <label class="delivery-card">
+                        <input type="radio" name="delivery_method" value="ppl_address">
+                        <span class="card-content">PPL</span>
+                    </label>
+                    <label class="delivery-card">
+                        <input type="radio" name="delivery_method" value="zasilkovna_address">
+                        <span class="card-content">Zásilkovna na adresu</span>
+                    </label>
+                    <label class="delivery-card">
+                        <input type="radio" name="delivery_method" value="posta_address">
+                        <span class="card-content">Česká pošta</span>
+                    </label>
+                </div>
+
+
+                <!-- SEKCE: Dodací údaje -->
+                <div style="margin-top: 2rem;"></div> 
+                <h2 class="section-title">Dodací údaje</h2>
+                <hr class="section-divider">
+                
                 <div class="form-group">
                     <label for="name">Jméno a příjmení</label>
                     <input type="text" id="name" required>
@@ -71,6 +216,5 @@
 
     </div>
 
-   
 </body>
 </html>

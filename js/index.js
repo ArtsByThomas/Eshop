@@ -345,7 +345,6 @@ async function fetchActiveOrders() {
     const activeBadge = document.getElementById('active-orders-badge');
     const userId = localStorage.getItem('userId');
 
-    // Pokud uživatel není přihlášen, skryjeme úplně tlačítko balíčku
     if (!userId || userId === 'guest') {
         if(activeBtn) activeBtn.style.display = 'none';
         return;
@@ -361,10 +360,8 @@ async function fetchActiveOrders() {
         const activeOrders = orders.filter(o => o.status !== 'Doručeno' && o.status !== 'Zrušeno');
 
         if (activeOrders.length === 0) {
-            // Pokud není co odesílat, schováme celou položku v menu!
             if(activeBtn) activeBtn.style.display = 'none';
         } else {
-            // Máme objednávky, zobrazíme tlačítko
             if(activeBtn) activeBtn.style.display = 'flex';
             
             if(activeBadge) {
@@ -375,7 +372,6 @@ async function fetchActiveOrders() {
            let html = '';
             activeOrders.reverse().forEach(order => {
                 
-                // 1. Zjistíme nakoupené položky bez cen
                 let itemsHtml = '';
                 if (order.cart_items && order.cart_items.length > 0) {
                     itemsHtml = '<div class="order-items">';
@@ -389,7 +385,6 @@ async function fetchActiveOrders() {
                     itemsHtml += '</div>';
                 }
 
-                // 2. Čistý vizuál s kartami a odhadem doručení (bez ceny a data vytvoření)
                 html += `
                     <div class="order-card">
                         <div class="order-delivery-badge">
@@ -409,9 +404,7 @@ async function fetchActiveOrders() {
         }
     } catch (error) {
         console.error("Chyba načítání objednávek:", error);
-        // Při chybě raději tlačítko vůbec neukážeme, ať to uživatele nezmate
         if(activeBtn) activeBtn.style.display = 'none';
     }
 }
-// Spuštění načítání dat ihned při načtení stránky
 fetchActiveOrders();

@@ -4,7 +4,7 @@ require_once 'db.php';
 
 $data = json_decode(file_get_contents('php://input'), true);
 $action = isset($_GET['action']) ? $_GET['action'] : '';
-$usersCollection = $db->users; // Kolekce "users" v MongoDB
+$usersCollection = $db->users;
 
 // 1. REGISTRACE
 if ($action === 'register') {
@@ -12,14 +12,12 @@ if ($action === 'register') {
     $password = $data['password'] ?? '';
     $name = trim($data['name'] ?? '');
 
-    // Zkontrolujeme, zda už e-mail v databázi není
     $existingUser = $usersCollection->findOne(['email' => $email]);
     if ($existingUser) {
         echo json_encode(["success" => false, "message" => "Uživatel s tímto e-mailem již existuje."]);
         exit;
     }
 
-    // Bezpečné uložení hesla (hash) a zápis do MongoDB
     $usersCollection->insertOne([
         'email' => $email,
         'name' => $name,
@@ -53,7 +51,6 @@ if ($action === 'reset_request') {
     $user = $usersCollection->findOne(['email' => $email]);
     if ($user) {
         // Zde by normálně proběhlo generování tokenu a odeslání reálného e-mailu (např. přes PHPMailer)
-        // Prozatím simulujeme úspěch
         echo json_encode(["success" => true, "message" => "Pokud e-mail existuje v naší databázi, odeslali jsme na něj instrukce k obnově hesla."]);
     } else {
         // Z bezpečnostních důvodů (ochrana proti zjišťování emailů) vracíme stejnou hlášku

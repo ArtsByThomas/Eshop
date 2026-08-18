@@ -50,7 +50,6 @@
             const password = document.getElementById('password').value;
             
             try {
-                // Pošleme přihlašovací údaje na ověření do auth.php
                 const response = await fetch('auth.php?action=login', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
@@ -60,12 +59,10 @@
                 const result = await response.json();
                 
                 if (result.success) {
-                    // Pokud MongoDB ověří hash hesla, přihlásíme uživatele v prohlížeči
                     localStorage.setItem('isLoggedIn', 'true');
                     localStorage.setItem('userId', result.user_id);
                     window.location.href = 'index.html';
                 } else {
-                    // Špatné heslo nebo e-mail
                     alert("Chyba: " + result.message);
                 }
             } catch (error) {

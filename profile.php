@@ -5,7 +5,6 @@ require_once 'db.php';
 $method = $_SERVER['REQUEST_METHOD'];
 $usersCollection = $db->users;
 
-// NAČTENÍ DAT PROFILU
 if ($method === 'GET') {
     $email = $_GET['user_id'] ?? null;
     if (!$email) {
@@ -15,7 +14,7 @@ if ($method === 'GET') {
     
     $user = $usersCollection->findOne(['email' => $email]);
     if ($user) {
-        unset($user['password']); // Z bezpečnostních důvodů nikdy neposíláme heslo na frontend
+        unset($user['password']); 
         echo json_encode($user);
     } else {
         echo json_encode(["error" => "Uživatel nenalezen"]);
@@ -23,7 +22,6 @@ if ($method === 'GET') {
     exit;
 }
 
-// ULOŽENÍ ZMĚN NEBO HESLA
 if ($method === 'POST') {
     $postData = json_decode(file_get_contents('php://input'), true);
     $email = $postData['user_id'] ?? null;
@@ -56,7 +54,6 @@ if ($method === 'POST') {
 
    $newEmail = trim($postData['email'] ?? '');
 
-    // Pokud uživatel mění e-mail za jiný, zkontrolujeme, zda už neexistuje
     if ($newEmail !== $email) {
         $existingUser = $usersCollection->findOne(['email' => $newEmail]);
         if ($existingUser) {
@@ -71,16 +68,15 @@ if ($method === 'POST') {
         'zip' => htmlspecialchars($postData['zip'] ?? ''),
         'city' => htmlspecialchars($postData['city'] ?? ''),
         'phone' => htmlspecialchars($postData['phone'] ?? ''),
-        'email' => htmlspecialchars($newEmail) // Uložíme nový (nebo původní) e-mail
+        'email' => htmlspecialchars($newEmail)
     ];
 
     $usersCollection->updateOne(
-        ['email' => $email], // Hledáme uživatele podle původního e-mailu
+        ['email' => $email], 
         ['$set' => $updateData],
         ['upsert' => true]
     );
 
-    // Vracíme i nový e-mail, aby si ho mohl frontend přepsat
     echo json_encode([
         "success" => true, 
         "message" => "Údaje byly uloženy do databáze!",
