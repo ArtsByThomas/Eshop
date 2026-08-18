@@ -94,9 +94,14 @@ function renderProducts(products) {
     }
 
     products.forEach(product => {
+        // Sjednocení ID pro MongoDB i klasické databáze
+        const pid = product.id || (product._id ? (product._id.$oid || product._id) : '');
+        // Bezpečný název (escapování apostrofů)
+        const safeName = (product.name || '').replace(/'/g, "&apos;");
+
         itemsContainer.innerHTML += `
           <div class="item">
-            <div class="item-clickable" onclick="openModal(${product.id})">
+            <div class="item-clickable" onclick="openModal('${pid}')">
                 <img src="${product.image}" alt="${product.name}">
                 <div class="item-info">
                     <h3>${product.name}</h3>
@@ -104,7 +109,7 @@ function renderProducts(products) {
                 </div>
             </div>
             <div style="padding: 0 1.5rem 1.5rem 1.5rem;">
-                <button class="add-to-cart-btn" onclick="addToCart(${product.id}, '${product.name}', '${product.price}', '${product.image}', event)">
+                <button class="add-to-cart-btn" onclick="addToCart('${pid}', '${safeName}', '${product.price}', '${product.image}', event)">
                     Přidat do košíku
                 </button>
             </div>
@@ -170,8 +175,16 @@ let currentImageSet = [];
 let currentImageIndex = 0;
 
 window.openModal = function(productId) {
-    const product = fetchedProducts.find(p => p.id === productId);
-    if(!product) return;
+    // Porovnáváme ID s upravenou logikou, aby fungovalo i s MongoDB ID strukturou
+    const product = fetchedProducts.find(p => {
+        const pid = p.id || (p._id ? (p._id.$oid || p._id) : '');
+        return pid == productId;
+    });
+
+    if(!product) {
+        console.error("Chyba: Produkt se nepodařilo najít pro ID:", productId);
+        return;
+    }
 
     document.getElementById('modal-title').textContent = product.name;
     document.getElementById('modal-price').textContent = product.price;
@@ -210,7 +223,8 @@ window.openModal = function(productId) {
 
     const addBtn = document.getElementById('modal-add-btn');
     addBtn.onclick = function() {
-        addToCart(product.id, product.name, product.price, currentImageSet[0], null);
+        const pid = product.id || (product._id ? (product._id.$oid || product._id) : '');
+        addToCart(pid, product.name, product.price, currentImageSet[0], null);
         closeModal();
     };
 
@@ -227,7 +241,15 @@ window.changeModalColor = function(element) {
 }
 
 function updateGalleryUI() {
-    document.getElementById('modal-img').src = currentImageSet[currentImageIndex];
+    const imgElement = document.getElementById('modal-img');
+    
+    // Trik pro restart animace - odebereme a po vynucení překreslení znovu přidáme
+    imgElement.classList.remove('fade-animation');
+    void imgElement.offsetWidth; // Vynutí tzv. reflow v prohlížeči
+    
+    imgElement.src = currentImageSet[currentImageIndex];
+    imgElement.classList.add('fade-animation');
+
     const dotsContainer = document.getElementById('gallery-dots');
     
     if (currentImageSet.length > 1) {

@@ -56,7 +56,6 @@ if ($action === 'products') {
         exit;
     }
 
-    // NOVÉ: Vytvoření nového prázdného produktu
     if ($method === 'PUT') {
         $newProduct = [
             'name' => 'Nový produkt',
